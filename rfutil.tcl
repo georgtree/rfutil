@@ -87,7 +87,7 @@ namespace eval ::rfutil {
         ## Numerical scope
         All input components and participating matrices must have equal lengths, including any frequency input. The
         caller must ensure that sample frequencies correspond; the package does not interpolate or store a frequency
-        grid.  Empty sweeps return empty components. The vector backend rejects exactly zero conversion denominators,
+        grid. Empty sweeps return empty components. The vector backend rejects exactly zero conversion denominators,
         determinants and required frequency/reactance divisors before publishing results. Nearly singular data can
         still amplify numerical errors; no automatic regularisation is performed.
 
@@ -232,9 +232,9 @@ namespace eval ::rfutil {
 ### Public commands
 proc ::rfutil::configure {args} {
     # Queries or changes interpreter-local defaults atomically.
-    # -input mode - list or vector; initially list.
-    # -output mode - list or vector; initially list.
-    # -ifexists policy - error or replace; initially error.
+    #  -input mode - list or vector; initially list.
+    #  -output mode - list or vector; initially list.
+    #  -ifexists policy - error or replace; initially error.
     # Returns: all defaults, or the value of a single queried option.
     # Synopsis: ?option?
     # Synopsis: ?-input list|vector? ?-output list|vector? ?-ifexists error|replace?
@@ -266,196 +266,195 @@ proc ::rfutil::configure {args} {
 
 proc ::rfutil::s2z {args} {
     # Converts 2-port s-parameters to z-parameters.
-    # sxx - Dictionary that contains 2-port matrix of s-parameters,
+    #  sxx - Dictionary that contains 2-port matrix of s-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # z0 - Reference impedance in form of {real imag}, default is {50 0}, optional
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  z0 - Reference impedance in form of `{real imag}`, default is `{50 0}`, optional
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: sxx ?z0? ?options?
-    # Returns: dictionary of the same form as input dictionary with z-parameters.  With vector output, dictionary values
+    # Synopsis: sxx ?z0? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with z-parameters. With vector output, dictionary values
     # are RBC vector names instead of lists.
     return [Dispatch s2z [uplevel 1 {namespace current}] [Parse s2z $args]]
 }
 
 proc ::rfutil::s2t {args} {
     # Converts 2-port s-parameters to transfer parameters.
-    # sxx - Dictionary that contains 2-port matrix of s-parameters,
+    #  sxx - Dictionary that contains 2-port matrix of s-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: sxx ?options?
-    # Returns: dictionary of the same form as input dictionary with transfer parameters.  With vector output, dictionary
+    # Synopsis: sxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with transfer parameters. With vector output, dictionary
     # values are RBC vector names instead of lists.
     return [Dispatch s2t [uplevel 1 {namespace current}] [Parse s2t $args]]
 }
 
 proc ::rfutil::t2s {args} {
     # Converts 2-port transfer parameters to s-parameters.
-    # txx - Dictionary that contains 2-port matrix of transfer parameters,
+    #  txx - Dictionary that contains 2-port matrix of transfer parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: txx ?options?
-    # Returns: dictionary of the same form as input dictionary with s-parameters.  With vector output, dictionary values
+    # Synopsis: txx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with s-parameters. With vector output, dictionary values
     # are RBC vector names instead of lists.
     return [Dispatch t2s [uplevel 1 {namespace current}] [Parse t2s $args]]
 }
 
 proc ::rfutil::s2y {args} {
     # Converts 2-port s-parameters to y-parameters.
-    # sxx - Dictionary that contains 2-port matrix of s-parameters,
+    #  sxx - Dictionary that contains 2-port matrix of s-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # z0 - Reference impedance in form of {real imag}, default is {50 0}, optional
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  z0 - Reference impedance in form of `{real imag}`, default is `{50 0}`, optional
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: sxx ?z0? ?options?
-    # Returns: dictionary of the same form as input dictionary with y-parameters.  With vector output, dictionary values
+    # Synopsis: sxx ?z0? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with y-parameters. With vector output, dictionary values
     # are RBC vector names instead of lists.
     return [Dispatch s2y [uplevel 1 {namespace current}] [Parse s2y $args]]
 }
 
 proc ::rfutil::z2s {args} {
     # Converts 2-port z-parameters to s-parameters.
-    # zxx - Dictionary that contains 2-port matrix of z-parameters,
+    #  zxx - Dictionary that contains 2-port matrix of z-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # z0 - Reference impedance in form of {real imag}, default is {50 0}, optional
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  z0 - Reference impedance in form of `{real imag}`, default is `{50 0}`, optional
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: zxx ?z0? ?options?
-    # Returns: dictionary of the same form as input dictionary with s-parameters.  With vector output, dictionary values
+    # Synopsis: zxx ?z0? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with s-parameters. With vector output, dictionary values
     # are RBC vector names instead of lists.
     return [Dispatch z2s [uplevel 1 {namespace current}] [Parse z2s $args]]
 }
 
 proc ::rfutil::y2s {args} {
     # Converts 2-port y-parameters to s-parameters.
-    # yxx - Dictionary that contains 2-port matrix of y-parameters,
+    #  yxx - Dictionary that contains 2-port matrix of y-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # z0 - Reference impedance in form of {real imag}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  z0 - Reference impedance in form of `{real imag}`, default is `{50 0}`, optional
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: yxx ?z0? ?options?
-    # Returns: dictionary of the same form as input dictionary with s-parameters.  With vector output, dictionary values
+    # Synopsis: yxx ?z0? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with s-parameters. With vector output, dictionary values
     # are RBC vector names instead of lists.
     return [Dispatch y2s [uplevel 1 {namespace current}] [Parse y2s $args]]
 }
 
 proc ::rfutil::z2y {args} {
     # Converts 2-port z-parameters to y-parameters.
-    # zxx - Dictionary that contains 2-port matrix of z-parameters,
+    #  zxx - Dictionary that contains 2-port matrix of z-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: zxx ?options?
-    # Returns: dictionary of the same form as input dictionary with y-parameters.  With vector output, dictionary values
+    # Synopsis: zxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with y-parameters. With vector output, dictionary values
     # are RBC vector names instead of lists.
     return [Dispatch z2y [uplevel 1 {namespace current}] [Parse z2y $args]]
 }
 
 proc ::rfutil::y2z {args} {
     # Converts 2-port y-parameters to z-parameters.
-    # yxx - Dictionary that contains 2-port matrix of y-parameters,
+    #  yxx - Dictionary that contains 2-port matrix of y-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: yxx ?options?
-    # Returns: dictionary of the same form as input dictionary with z-parameters.  With vector output, dictionary values
+    # Synopsis: yxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with z-parameters. With vector output, dictionary values
     # are RBC vector names instead of lists.
     return [Dispatch y2z [uplevel 1 {namespace current}] [Parse y2z $args]]
 }
 
 proc ::rfutil::zTEq {args} {
     # Calculates equivalent T circuit elements values.
-    # zxx - Dictionary that contains 2-port matrix of z-parameters,
+    #  zxx - Dictionary that contains 2-port matrix of z-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     #               Z1            Z2                                         
     #              ___           ___                                        
@@ -471,25 +470,25 @@ proc ::rfutil::zTEq {args} {
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: zxx ?options?
-    # Returns: dictionary of the form {z1 list z2 list z3 list} with impedances of equivalent elements.  With vector
+    # Synopsis: zxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the form `{z1 list z2 list z3 list}` with impedances of equivalent elements. With vector
     # output, dictionary values are RBC vector names instead of lists.
     return [Dispatch zTEq [uplevel 1 {namespace current}] [Parse zTEq $args]]
 }
 
 proc ::rfutil::cxxTEq {args} {
     # Calculates capacitive part equivalent T circuit elements values.
-    # freq - Frequency values list
-    # zxx - Dictionary that contains 2-port matrix of z-parameters,
+    #  freq - Frequency values list
+    #  zxx - Dictionary that contains 2-port matrix of z-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     #             C1           C2            
     #              | |           | |         
@@ -505,25 +504,25 @@ proc ::rfutil::cxxTEq {args} {
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: freq zxx ?options?
-    # Returns: dictionary of the form {c1 list c2 list c3 list} with capacitive part of equivalent elements impedance.
+    # Synopsis: freq zxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the form `{c1 list c2 list c3 list}` with capacitive part of equivalent elements impedance.
     # With vector output, dictionary values are RBC vector names instead of lists.
     return [Dispatch cxxTEq [uplevel 1 {namespace current}] [Parse cxxTEq $args]]
 }
 
 proc ::rfutil::lxxTEq {args} {
     # Calculates inductive part equivalent T circuit elements values.
-    # freq - Frequency values list
-    # zxx - Dictionary that contains 2-port matrix of z-parameters,
+    #  freq - Frequency values list
+    #  zxx - Dictionary that contains 2-port matrix of z-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     #             L1            L2          
     #              ___           ___        
@@ -539,24 +538,24 @@ proc ::rfutil::lxxTEq {args} {
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: freq zxx ?options?
-    # Returns: dictionary of the form {l1 list l2 list l3 list} with inductive part of equivalent elements impedance.
+    # Synopsis: freq zxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the form `{l1 list l2 list l3 list}` with inductive part of equivalent elements impedance.
     # With vector output, dictionary values are RBC vector names instead of lists.
     return [Dispatch lxxTEq [uplevel 1 {namespace current}] [Parse lxxTEq $args]]
 }
 
 proc ::rfutil::yPEq {args} {
     # Calculates equivalent P circuit elements values.
-    # yxx - Dictionary that contains 2-port matrix of y-parameters,
+    #  yxx - Dictionary that contains 2-port matrix of y-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     #                      Y3
     #                      ___                                               
@@ -572,25 +571,25 @@ proc ::rfutil::yPEq {args} {
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: yxx ?options?
-    # Returns: dictionary of the form {y1 list y2 list y3 list} with impedances of equivalent elements.  With vector
+    # Synopsis: yxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the form `{y1 list y2 list y3 list}` with impedances of equivalent elements. With vector
     # output, dictionary values are RBC vector names instead of lists.
     return [Dispatch yPEq [uplevel 1 {namespace current}] [Parse yPEq $args]]
 }
 
 proc ::rfutil::cxxPEq {args} {
     # Calculates capacitive part equivalent P circuit elements values.
-    # freq - Frequency values list
-    # yxx - Dictionary that contains 2-port matrix of y-parameters,
+    #  freq - Frequency values list
+    #  yxx - Dictionary that contains 2-port matrix of y-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     #                     C3                  
     #                      | |                
@@ -606,25 +605,25 @@ proc ::rfutil::cxxPEq {args} {
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: freq yxx ?options?
-    # Returns: dictionary of the form {c1 list c2 list c3 list} with capacitive part of equivalent elements admittance.
-    # With vector output, dictionary values are RBC vector names instead of lists.
+    # Synopsis: freq yxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the form `{c1 list c2 list c3 list}` with capacitive part of equivalent elements
+    # admittance. With vector output, dictionary values are RBC vector names instead of lists.
     return [Dispatch cxxPEq [uplevel 1 {namespace current}] [Parse cxxPEq $args]]
 }
 
 proc ::rfutil::lxxPEq {args} {
     # Calculates inductive part equivalent P circuit elements values.
-    # freq - Frequency values list
-    # yxx - Dictionary that contains 2-port matrix of y-parameters,
+    #  freq - Frequency values list
+    #  yxx - Dictionary that contains 2-port matrix of y-parameters,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     #                       L3                 
     #                       ___                
@@ -640,65 +639,65 @@ proc ::rfutil::lxxPEq {args} {
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: freq yxx ?options?
-    # Returns: dictionary of the form {l1 list l2 list l3 list} with inductive part of equivalent elements impedance.
+    # Synopsis: freq yxx ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the form `{l1 list l2 list l3 list}` with inductive part of equivalent elements impedance.
     # With vector output, dictionary values are RBC vector names instead of lists.
     return [Dispatch lxxPEq [uplevel 1 {namespace current}] [Parse lxxPEq $args]]
 }
 
 proc ::rfutil::inv2x2 {args} {
     # Calculates inverse matrix of input matrix with size 2x2.
-    # mat - Dictionary that contains 2-port matrix,
+    #  mat - Dictionary that contains 2-port matrix,
     #   each matrix element is the list of values at different
-    #   frequencies (or other parameter) in form of {real imag}.
-    #   The form of dictionary is: {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #   frequencies (or other parameter) in form of `{real imag}`.
+    #   The form of dictionary is: `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: mat ?options?
-    # Returns: dictionary of the same form as input dictionary with resulted matrix.  With vector output, dictionary
+    # Synopsis: mat ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionary with resulted matrix. With vector output, dictionary
     # values are RBC vector names instead of lists.
     return [Dispatch inv2x2 [uplevel 1 {namespace current}] [Parse inv2x2 $args]]
 }
 
 proc ::rfutil::matMul2x2 {args} {
     # Calculates multiply matrices with 2x2 size.
-    # mat1 - First matrix in dictionary form {11 list 12 list 21 list 22 list}
-    # mat2 - Second matrix in dictionary form {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #  mat1 - First matrix in dictionary form {11 list 12 list 21 list 22 list}
+    #  mat2 - Second matrix in dictionary form {11 list 12 list 21 list 22 list}
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: mat1 mat2 ?options?
-    # Returns: dictionary of the same form as input dictionaries with resulted matrix.  With vector output, dictionary
+    # Synopsis: mat1 mat2 ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionaries with resulted matrix. With vector output, dictionary
     # values are RBC vector names instead of lists.
     return [Dispatch matMul2x2 [uplevel 1 {namespace current}] [Parse matMul2x2 $args]]
 }
 
 proc ::rfutil::deemb {args} {
     # Procedure for deembedding of DUT from test fixture.
-    # sMeas - Measured s-parameters matrix in dictionary form {11 list 12 list 21 list 22 list}
-    # sFixtL - s-parameters matrix of left fixture in dictionary form {11 list 12 list 21 list 22 list}
-    # sFixtR - s-parameters matrix of right fixture in dictionary form {11 list 12 list 21 list 22 list}
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
-    # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
-    # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
+    #  sMeas - Measured s-parameters matrix in dictionary form `{11 list 12 list 21 list 22 list}`
+    #  sFixtL - s-parameters matrix of left fixture in dictionary form `{11 list 12 list 21 list 22 list}`
+    #  sFixtR - s-parameters matrix of right fixture in dictionary form `{11 list 12 list 21 list 22 list}`
+    #  -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    #  -output list|vector - Output format; defaults to `::rfutil::configure -output`.
+    #  -namespace name - Output namespace, created if missing; relative to the caller.
+    #  -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    #  -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     #```
     #    ┌      ┐   ┌        ┐-1   ┌       ┐     ┌        ┐-1
@@ -709,47 +708,54 @@ proc ::rfutil::deemb {args} {
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: sMeas sFixtL sFixtR ?options?
-    # Returns: dictionary of the same form as input dictionaries with deembedded DUT s-matrix.  With vector output,
+    # Synopsis: sMeas sFixtL sFixtR ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace
+    # name? ?-names dictionary?
+    # Returns: dictionary of the same form as input dictionaries with deembedded DUT s-matrix. With vector output,
     # dictionary values are RBC vector names instead of lists.
     return [Dispatch deemb [uplevel 1 {namespace current}] [Parse deemb $args]]
 }
 
 proc ::rfutil::mag {args} {
     # Calculates magnitude of complex number.
-    # data - List with complex data in form {real imag}
+    # data - List with complex data in form `{real imag}`
     # -db - Option to select output magnitude in db scale
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
+    # -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    # -output list|vector - Output format; defaults to `::rfutil::configure -output`.
     # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
+    # -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    # -name name - Single destination; conflicts with the result entry of `-names`.
     # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: data ?-db? ?options?
-    # Returns: list of magnitudes.  With vector output, returns a real RBC vector name.
+    # Synopsis: data ?-db? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-name name?
+    # Synopsis: data ?-db? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: list of magnitudes. With vector output, returns a real RBC vector name.
     return [Dispatch mag [uplevel 1 {namespace current}] [Parse mag $args]]
 }
 
 proc ::rfutil::angle {args} {
     # Calculates angle (phase) of complex number.
-    # data - List with complex data in form {real imag}
+    # data - List with complex data in form `{real imag}`
     # -deg - Option to select angle in degrees units
-    # -input list|vector - Input format; defaults to ::rfutil::configure -input.
-    # -output list|vector - Output format; defaults to ::rfutil::configure -output.
+    # -input list|vector - Input format; defaults to `::rfutil::configure -input`.
+    # -output list|vector - Output format; defaults to `::rfutil::configure -output`.
     # -namespace name - Output namespace, created if missing; relative to the caller.
-    # -names dictionary - Result field to destination name mapping. Missing fields use #auto.
-    # -name name - Single destination for mag or angle; conflicts with the result entry of -names.
+    # -names dictionary - Result field to destination name mapping. Missing fields use `#auto`.
+    # -name name - Single destination; conflicts with the result entry of `-names`.
     # -ifexists error|replace - Collision policy. Replacement requires a writable vector of the same type.
     #
     # Vector names resolve in the caller's namespace. Vector options require Tcl 9 and rbc::vector.
     # Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.
     #
-    # Synopsis: data ?-deg? ?options?
-    # Returns: list of angles.  With vector output, returns a real RBC vector name.
+    # Synopsis: data ?-deg? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-name name?
+    # Synopsis: data ?-deg? ?-input list|vector? ?-output list|vector? ?-ifexists error|replace? ?-namespace name?
+    # ?-names dictionary?
+    # Returns: list of angles. With vector output, returns a real RBC vector name.
     return [Dispatch angle [uplevel 1 {namespace current}] [Parse angle $args]]
 }
 
