@@ -45,25 +45,33 @@ doc:
 
 install: install-libraries install-doc
 install-libraries:
-	$(INSTALL_DATA_DIR) "$(DESTDIR)$(pkglibdir)"
+	@echo "Installing library files in $(DESTDIR)$(pkglibdir)"
+	@$(INSTALL_DATA_DIR) "$(DESTDIR)$(pkglibdir)"
 	@set -e; for file in $(PKG_FILES); do \
+	    echo "Installing $(srcdir)/$$file"; \
 	    $(INSTALL_DATA) "$(srcdir)/$$file" "$(DESTDIR)$(pkglibdir)/$$file"; \
 	done
 
 install-doc:
 	@if test -f "$(DOC_DIR)/index.html"; then \
 	    set -e; $(INSTALL_DATA_DIR) "$(DESTDIR)$(pkgdocdir)" "$(DESTDIR)$(mandir)/mann"; \
+	    echo "Installing html documentation in $(DESTDIR)$(pkgdocdir)"; \
 	    for file in $(DOC_FILES); do \
-	        test ! -f "$(DOC_DIR)/$$file" || \
+	        if test -f "$(DOC_DIR)/$$file"; then \
+	            echo "Installing $(DOC_DIR)/$$file"; \
 	            $(INSTALL_DATA) "$(DOC_DIR)/$$file" "$(DESTDIR)$(pkgdocdir)/$$file"; \
+	        fi; \
 	    done; \
 	    for dir in _static _sources; do \
 	        if test -d "$(DOC_DIR)/$$dir"; then \
 	            $(INSTALL_DATA_DIR) "$(DESTDIR)$(pkgdocdir)/$$dir"; \
+	            echo "Installing $(DOC_DIR)/$$dir"; \
 	            cp -R "$(DOC_DIR)/$$dir/." "$(DESTDIR)$(pkgdocdir)/$$dir/"; \
 	        fi; \
 	    done; \
+	    echo "Installing manual pages in $(DESTDIR)$(mandir)/mann"; \
 	    for file in rfutil.n rfutil-rfutil.n; do \
+	        echo "Installing $(DOC_DIR)/$$file"; \
 	        $(INSTALL_DATA) "$(DOC_DIR)/$$file" "$(DESTDIR)$(mandir)/mann/$$file"; \
 	    done; \
 	else \
