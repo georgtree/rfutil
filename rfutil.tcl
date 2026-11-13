@@ -128,10 +128,108 @@ namespace eval ::rfutil {
     ::math::constants::constants radtodeg degtorad pi
     variable defaults {-input list -output list -ifexists error}
     variable serial 0
+
+    # Static metadata shared by argument parsing and both calculation backends.
+    variable operations {
+        s2z {
+            signature   {sxx z0}
+            fields      {11 21 12 22}
+            description {Converts 2-port s-parameters to z-parameters.}
+        }
+        s2t {
+            signature   {sxx}
+            fields      {11 21 12 22}
+            description {Converts 2-port s-parameters to transfer parameters.}
+        }
+        t2s {
+            signature   {txx}
+            fields      {11 21 12 22}
+            description {Converts 2-port transfer parameters to s-parameters.}
+        }
+        s2y {
+            signature   {sxx z0}
+            fields      {11 21 12 22}
+            description {Converts 2-port s-parameters to y-parameters.}
+        }
+        z2s {
+            signature   {zxx z0}
+            fields      {11 21 12 22}
+            description {Converts 2-port z-parameters to s-parameters.}
+        }
+        y2s {
+            signature   {yxx z0}
+            fields      {11 21 12 22}
+            description {Converts 2-port y-parameters to s-parameters.}
+        }
+        z2y {
+            signature   {zxx}
+            fields      {11 21 12 22}
+            description {Converts 2-port z-parameters to y-parameters.}
+        }
+        y2z {
+            signature   {yxx}
+            fields      {11 21 12 22}
+            description {Converts 2-port y-parameters to z-parameters.}
+        }
+        zTEq {
+            signature   {zxx}
+            fields      {z1 z2 z3}
+            description {Calculates equivalent T circuit elements values.}
+        }
+        cxxTEq {
+            signature   {freq zxx}
+            fields      {c1 c2 c3}
+            description {Calculates capacitive part equivalent T circuit elements values.}
+        }
+        lxxTEq {
+            signature   {freq zxx}
+            fields      {l1 l2 l3}
+            description {Calculates inductive part equivalent T circuit elements values.}
+        }
+        yPEq {
+            signature   {yxx}
+            fields      {y1 y2 y3}
+            description {Calculates equivalent P circuit elements values.}
+        }
+        cxxPEq {
+            signature   {freq yxx}
+            fields      {c1 c2 c3}
+            description {Calculates capacitive part equivalent P circuit elements values.}
+        }
+        lxxPEq {
+            signature   {freq yxx}
+            fields      {l1 l2 l3}
+            description {Calculates inductive part equivalent P circuit elements values.}
+        }
+        inv2x2 {
+            signature   {mat}
+            fields      {11 21 12 22}
+            description {Calculates inverse matrix of input matrix with size 2x2.}
+        }
+        matMul2x2 {
+            signature   {mat1 mat2}
+            fields      {11 21 12 22}
+            description {Calculates multiply matrices with 2x2 size.}
+        }
+        deemb {
+            signature   {sMeas sFixtL sFixtR}
+            fields      {11 21 12 22}
+            description {Procedure for deembedding of DUT from test fixture.}
+        }
+        mag {
+            signature   {data}
+            fields      {result}
+            description {Calculates magnitude of complex number.}
+        }
+        angle {
+            signature   {data}
+            fields      {result}
+            description {Calculates angle (phase) of complex number.}
+        }
+    }
 }
 
 ### Public commands
-
 proc ::rfutil::configure {args} {
     # Queries or changes interpreter-local defaults atomically.
     # -input mode - list or vector; initially list.
@@ -658,7 +756,7 @@ proc ::rfutil::angle {args} {
 ### Common argument and output handling
 proc ::rfutil::Parse {op arguments} {
     # Parses a public calculation's positional arguments and shared options.
-    # op - Public calculation name accepted by Signature.
+    # op - Public calculation name registered in the operations dictionary.
     # arguments - Raw Tcl argument list supplied to the public command.
     #
     # Builds the operation-specific positional and boolean definitions together with the common representation and
@@ -667,30 +765,10 @@ proc ::rfutil::Parse {op arguments} {
     # three levels, leaving argparse, this helper and the wrapper without performing a calculation.
     #
     # Returns: Dictionary of parsed argument names and values, without leading option hyphens.
+    variable operations
     set args $arguments
-    set descriptions {
-        s2z {Converts 2-port s-parameters to z-parameters.}
-        s2t {Converts 2-port s-parameters to transfer parameters.}
-        t2s {Converts 2-port transfer parameters to s-parameters.}
-        s2y {Converts 2-port s-parameters to y-parameters.}
-        z2s {Converts 2-port z-parameters to s-parameters.}
-        y2s {Converts 2-port y-parameters to s-parameters.}
-        z2y {Converts 2-port z-parameters to y-parameters.}
-        y2z {Converts 2-port y-parameters to z-parameters.}
-        zTEq {Calculates equivalent T circuit elements values.}
-        cxxTEq {Calculates capacitive part equivalent T circuit elements values.}
-        lxxTEq {Calculates inductive part equivalent T circuit elements values.}
-        yPEq {Calculates equivalent P circuit elements values.}
-        cxxPEq {Calculates capacitive part equivalent P circuit elements values.}
-        lxxPEq {Calculates inductive part equivalent P circuit elements values.}
-        inv2x2 {Calculates inverse matrix of input matrix with size 2x2.}
-        matMul2x2 {Calculates multiply matrices with 2x2 size.}
-        deemb {Procedure for deembedding of DUT from test fixture.}
-        mag {Calculates magnitude of complex number.}
-        angle {Calculates angle (phase) of complex number.}
-    }
-    set spec {}
-    foreach name [Signature $op] {
+    set spec [list]
+    foreach name [dict get $operations $op signature] {
         switch -- $name {
             z0 {
                 lappend spec {z0 -optional -default {50.0 0.0} -help {Common reference impedance as {real imag}}}
@@ -719,7 +797,7 @@ proc ::rfutil::Parse {op arguments} {
             {-name= -help {Destination for mag or angle; omit or use #auto for automatic naming}}\
             {-names= -type dict -help {Dictionary of result fields and destination vector names}}\
             {-ifexists= -enum {error replace} -help {Existing destination policy; uses the package default}}
-    return [argparse -inline -mixed -helplevel 3 -help [dict get $descriptions $op] $spec]
+    return [argparse -inline -mixed -helplevel 3 -help [dict get $operations $op description] $spec]
 }
 
 proc ::rfutil::RequireRbc {} {
@@ -731,98 +809,6 @@ proc ::rfutil::RequireRbc {} {
     # Returns: Version string supplied by package require rbc::vector.
     package require Tcl 9.0-
     package require rbc::vector 0.8.5
-}
-
-proc ::rfutil::Signature {op} {
-    # Returns the ordered positional argument names for a calculation.
-    # op - Public calculation name.
-    #
-    # The names identify entries in the parsed options dictionary and determine scalar-backend argument order.
-    # Boolean switches and representation/destination options are not included.
-    #
-    # Returns: List of positional argument names.
-    switch -- $op {
-        s2z - s2y {
-            return {sxx z0}
-        }
-        z2s {
-            return {zxx z0}
-        }
-        y2s {
-            return {yxx z0}
-        }
-        s2t {
-            return sxx
-        }
-        t2s {
-            return txx
-        }
-        z2y - 
-        zTEq {
-            return zxx
-        }
-        y2z -
-        yPEq {
-            return yxx
-        }
-        cxxTEq -
-        lxxTEq {
-            return {freq zxx}
-        }
-        cxxPEq -
-        lxxPEq {
-            return {freq yxx}
-        }
-        inv2x2 {
-            return mat
-        }
-        matMul2x2 {
-            return {mat1 mat2}
-        }
-        deemb {
-            return {sMeas sFixtL sFixtR}
-        }
-        mag -
-        angle {
-            return data
-        }
-        default {
-            return -code error "unknown RF operation $op"
-        }
-    }
-}
-
-proc ::rfutil::Fields {op} {
-    # Returns the result field names used by a calculation.
-    # op - Public calculation name; the caller is responsible for validating it.
-    #
-    # Equivalent-circuit calculations use three element names, while mag and angle use the internal field result.
-    # All other names take the two-port matrix fallback; this helper does not validate the operation name.
-    #
-    # Returns: Field list, with matrix fields ordered as 11, 21, 12, 22.
-    switch -- $op {
-        zTEq {
-            return {z1 z2 z3}
-        }
-        yPEq {
-            return {y1 y2 y3}
-        }
-        cxxTEq -
-        cxxPEq {
-            return {c1 c2 c3}
-        }
-        lxxTEq -
-        lxxPEq {
-            return {l1 l2 l3}
-        }
-        mag -
-        angle {
-            return result
-        }
-        default {
-            return {11 21 12 22}
-        }
-    }
 }
 
 proc ::rfutil::Qualify {ns name} {
@@ -875,6 +861,7 @@ proc ::rfutil::Dispatch {op caller options} {
     # -ifexists replace. Output namespace creation and callback side effects are not rolled back.
     #
     # Returns: Result dictionary, or the single list/vector result for mag and angle.
+    variable operations
     variable defaults
     variable serial
     foreach {key value} $defaults {
@@ -885,7 +872,7 @@ proc ::rfutil::Dispatch {op caller options} {
     }
     set input [dict get $options input]
     set output [dict get $options output]
-    set fields [Fields $op]
+    set fields [dict get $operations $op fields]
     if {$output eq {list}} {
         foreach key {namespace name names} {
             if {[dict exists $options $key]} {
@@ -911,7 +898,7 @@ proc ::rfutil::Dispatch {op caller options} {
     }
     # Validate all input lengths together, including between separate matrices.
     set count -1
-    foreach arg [Signature $op] {
+    foreach arg [dict get $operations $op signature] {
         if {$arg eq {z0}} {
             continue
         }
@@ -1098,7 +1085,7 @@ proc ::rfutil::compLen {dict} {
     set keys [dict keys $dict]
     set values [dict values $dict]
     set size [dict size $dict]
-    for {set i 0} {$i<[expr {$size-1}]} {incr i} {
+    for {set i 0} {$i<$size-1} {incr i} {
         set keyA [lindex $keys $i]
         set keyB [lindex $keys [expr {$i+1}]]
         set lenA [llength [lindex $values $i]]
@@ -1126,6 +1113,7 @@ proc ::rfutil::ListCalculate {op options} {
     #
     # Returns: Dictionary of result fields and lists; mag and angle use the field result. Empty sweeps retain all
     # fields.
+    variable operations
     variable pi
     variable radtodeg
     if {$op eq {deemb}} {
@@ -1142,7 +1130,7 @@ proc ::rfutil::ListCalculate {op options} {
     }
     set samples {}
     set number 0
-    foreach input [Signature $op] {
+    foreach input [dict get $operations $op signature] {
         set value [dict get $options $input]
         if {$input eq {z0}} {
             set z0 $value
@@ -1163,7 +1151,7 @@ proc ::rfutil::ListCalculate {op options} {
     if {$op in {s2y y2s}} {
         set y0 [pow $z0 $m1c]
     }
-    set fields [Fields $op]
+    set fields [dict get $operations $op fields]
     set result {}
     foreach key $fields {
         dict set result $key {}
@@ -1326,6 +1314,7 @@ proc ::rfutil::VectorCalculate {op options work} {
     # its temporaries, even on failure; Dispatch owns workspace cleanup and Publish handles persistent outputs.
     #
     # Returns: Dictionary of result fields and private vector names; mag and angle use the field result.
+    variable operations
     if {$op eq {deemb}} {
         foreach {field label} {sMeas m sFixtL l sFixtR r} {
             set t [VectorCalculate s2t [dict create sxx [dict get $options $field]] $work]
@@ -1339,7 +1328,7 @@ proc ::rfutil::VectorCalculate {op options work} {
         return [VectorCalculate t2s [dict create txx $lmr] $work]
     }
     set number 0
-    foreach input [Signature $op] {
+    foreach input [dict get $operations $op signature] {
         set value [dict get $options $input]
         if {$input eq {z0}} {
             set z [::rbc::vector create ${work}::#auto -type complex -variable {}]
@@ -1444,11 +1433,11 @@ proc ::rfutil::VectorCalculate {op options work} {
                 set prefix y
             }
             if {$op in {zTEq yPEq}} {
-                foreach v $eq key [Fields $op] {dict set result $key $v}
+                foreach v $eq key [dict get $operations $op fields] {dict set result $key $v}
             } else {
                 Nonzero $freq frequency
                 set w [Eval $work {6.2831853071795864769*$freq}]
-                foreach v $eq key [Fields $op] {
+                foreach v $eq key [dict get $operations $op fields] {
                     if {$op in {cxxTEq lxxPEq}} {
                         set im [Eval $work {imag($v)}]
                         Nonzero $im {imaginary component}

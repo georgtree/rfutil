@@ -47,7 +47,7 @@ proc ::rfTest::compare {op input output} {
     set m [matrix]
     set expectedArgs {}
     set actualArgs {}
-    foreach arg [::rfutil::Signature $op] {
+    foreach arg [dict get $::rfutil::operations $op signature] {
         switch -- $arg {
             z0 {
                 set value {50 0}
@@ -241,7 +241,7 @@ test vector.emptyall {all calculations support empty sweeps with real or complex
     foreach op {s2z s2y z2s y2s z2y y2z s2t t2s zTEq yPEq cxxTEq lxxTEq cxxPEq lxxPEq inv2x2 matMul2x2 deemb mag\
                         angle} {
         set args {}
-        foreach arg [::rfutil::Signature $op] {
+        foreach arg [dict get $::rfutil::operations $op signature] {
             switch $arg {
                 z0 {
                     lappend args {50 0}
