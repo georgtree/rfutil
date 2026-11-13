@@ -1,0 +1,273 @@
+package require tcltest 2
+namespace import ::tcltest::*
+package require rfutil 0.2
+set haveRbc [expr {![catch {package require rbc::vector 0.8.5}]}]
+
+if {!$haveRbc && [info exists ::env(RFUTIL_REQUIRE_RBC)]} {
+    error {make test-vector requires rbc::vector 0.8.5 or later}
+}
+testConstraint rbc $haveRbc
+namespace eval ::rfTest {}
+proc ::rfTest::reset {} {
+    foreach v [::rbc::vector names ::rfTest::*] {
+        ::rbc::vector destroy $v
+    }
+    ::rfutil::configure -input list -output list -ifexists error
+}
+proc ::rfTest::matrix {} {
+    return {11 {{2.1 0.7} {3.2 1.1} {2.7 -0.5}} 12 {{0.2 0.1} {0.3 0.2} {0.4 -0.1}} 21 {{0.7 0.3} {0.8 0.4} {0.6 0.2}}\
+                    22 {{3.4 0.9} {4.2 1.3} {3.1 -0.8}}}
+}
+proc ::rfTest::vector {name data {type complex}} {
+    set name [::rbc::vector create ::rfTest::$name -type $type -variable {}]
+    $name set $data
+    return $name
+}
+proc ::rfTest::matrixVectors {prefix data} {
+    set result {}
+    dict for {key values} $data {dict set result $key [vector ${prefix}$key $values]}
+    return $result
+}
+proc ::rfTest::close {a b} {
+    if {[llength $a] != [llength $b]} {
+        return 0
+    }
+    foreach x $a y $b {
+        if {[llength $x] > 1 || [llength $y] > 1} {
+            if {![close $x $y]} {
+                return 0
+            }
+        } elseif {abs($x-$y) > 1e-10*max(1.0,abs($x),abs($y))} {
+            return 0
+        }
+    }
+    return 1
+}
+proc ::rfTest::compare {op input output} {
+    set m [matrix]
+    set expectedArgs {}
+    set actualArgs {}
+    foreach arg [::rfutil::Signature $op] {
+        switch -- $arg {
+            z0 {
+                set value {50 0}
+                set v $value
+            }
+            freq {
+                set value {1e6 2e6 3e6}
+                set v [vector freq $value real]
+            }
+            data {
+                set value [dict get $m 11]
+                set v [vector data $value]
+            }
+            default {
+                set value $m
+                set v [matrixVectors $arg $value]
+            }
+        }
+        lappend expectedArgs $value
+        lappend actualArgs [expr {$input eq {vector} ? $v : $value}]
+    }
+    set expected [::rfutil::$op {*}$expectedArgs]
+    set actual [::rfutil::$op {*}$actualArgs -input $input -output $output\
+                        {*}[expr {$output eq {vector} ? {-namespace ::rfTest::out} : {}}]]
+    if {$op in {mag angle}} {
+        set expected [dict create result $expected]
+        set actual [dict create result $actual]
+    }
+    dict for {key value} $expected {
+        set result [dict get $actual $key]
+        if {$output eq {vector}} {
+            set type [expr {$key in {11 21 12 22 z1 z2 z3 y1 y2 y3} ? {complex} : {real}}]
+            if {[$result type] ne $type} {
+                return 0
+            }
+            set result [$result range 0 end]
+        }
+        if {![close $value $result]} {
+            return 0
+        }
+    }
+    return [expr {[llength [::rbc::vector names ::rfutil::work*::*]] == 0}]
+}
+foreach op {s2z s2y z2s y2s z2y y2z s2t t2s zTEq yPEq cxxTEq lxxTEq cxxPEq lxxPEq inv2x2 matMul2x2 deemb mag angle} {
+    foreach {input output} {vector list vector vector list vector} {
+        test vector.$op.$input.$output {whole-sweep results agree with the retained scalar backend}\
+                -constraints rbc -setup {
+                ::rfTest::reset
+            } -body [list ::rfTest::compare $op $input $output] -cleanup {::rfTest::reset} -result 1
+    }
+}
+
+test vector.defaults {queries, per-call overrides and atomic configuration} -constraints rbc -setup {
+    ::rfTest::reset
+    set v [::rfTest::vector data {{3 4}}]
+} -body {
+    ::rfutil::configure -input vector -output vector -ifexists replace
+    set saved [::rfutil::configure]
+    set a [::rfutil::mag $v -output list]
+    catch {::rfutil::configure -input list -output invalid}
+    list $a [expr {$saved eq [::rfutil::configure]}] [::rfutil::configure -input]
+} -cleanup {::rfTest::reset} -result {5.0 1 vector}
+
+test vector.namespace {caller-relative names, namespace creation and literal parentheses} -constraints rbc -setup {
+    ::rfTest::reset
+    ::rfTest::vector {samples(x)} {{3 4} {5 12}}
+} -body {
+    namespace eval ::rfTest {
+        set out [::rfutil::mag {samples(x)} -input vector -output vector -namespace nested::new -name {values(y)}]
+        list $out [$out range 0 end]
+    }
+} -cleanup {::rfTest::reset} -result {::rfTest::nested::new::values(y) {5.0 13.0}}
+
+test vector.replace {replacement retains identity and permits input aliasing} -constraints rbc -setup {
+    ::rfTest::reset
+    set v [::rfTest::matrixVectors s [::rfTest::matrix]]
+    set expected [::rfutil::inv2x2 [::rfTest::matrix]]
+} -body {
+    set out [::rfutil::inv2x2 $v -input vector -output vector -names $v -ifexists replace]
+    set ok 1
+    dict for {k n} $out {set ok [expr {$ok && $n eq [dict get $v $k]}]}
+    dict for {k n} $out {set ok [expr {$ok && [::rfTest::close [$n range 0 end] [dict get $expected $k]]}]}
+    set ok
+} -cleanup {::rfTest::reset} -result 1
+
+test vector.preflight {a later locked destination leaves earlier outputs unchanged} -constraints rbc -setup {
+    ::rfTest::reset
+    set v [::rfTest::matrixVectors s [::rfTest::matrix]]
+    [dict get $v 22] readonly true
+    set before [[dict get $v 11] range 0 end]
+} -body {
+    set fail [catch {::rfutil::s2z $v -input vector -output vector -names $v -ifexists replace} msg]
+    list $fail [string match *read-only* $msg] [expr {$before eq [[dict get $v 11] range 0 end]}]\
+            [::rbc::vector names ::rfutil::work*::*]
+} -cleanup {::rfTest::reset} -result {1 1 1 {}}
+
+test vector.collision {collision policy, duplicate outputs and type mismatch} -constraints rbc -setup {
+    ::rfTest::reset
+    set v [::rfTest::matrixVectors s [::rfTest::matrix]]
+    set real [::rfTest::vector real {9 9 9} real]
+} -body {
+    list [catch {::rfutil::s2z $v -input vector -output vector -names $v}]\
+            [catch {::rfutil::s2z $v -input vector -output vector -names {11 ::rfTest::same 12 ::rfTest::same}}]\
+            [catch {::rfutil::s2z $v -input vector -output vector -names [dict create 22 $real] -ifexists replace}]\
+            [$real range 0 end]
+} -cleanup {::rfTest::reset} -result {1 1 1 {9.0 9.0 9.0}}
+
+test vector.names {partial mapping, automatic names and fully-qualified destinations} -constraints rbc -setup {
+    ::rfTest::reset
+} -body {
+    set result [::rfutil::s2z [::rfTest::matrix] -output vector -namespace ::rfTest::new\
+                    -names {11 ::rfTest::explicit 22 #auto}]
+    list [dict get $result 11] [string match ::rfTest::new::* [dict get $result 22]]\
+            [expr {[llength [lsort -unique [dict values $result]]] == 4}]
+} -cleanup {::rfTest::reset} -result {::rfTest::explicit 1 1}
+
+test vector.singular {singular input reports failure without publishing or leaking} -constraints rbc -setup {
+    ::rfTest::reset
+    set m {11 {{1 0}} 12 {{1 0}} 21 {{1 0}} 22 {{1 0}}}
+    set v [::rfTest::matrixVectors s $m]
+} -body {
+    set status [catch {::rfutil::inv2x2 $v -input vector -output vector -namespace ::rfTest::out} msg]
+    list $status [string match *determinant* $msg] [::rbc::vector names ::rfutil::work*::*]\
+            [::rbc::vector names ::rfTest::out::*]
+} -cleanup {::rfTest::reset} -result {1 1 {} {}}
+
+test vector.lengths {individually consistent matrices still need equal sweep lengths} -constraints rbc -setup {
+    ::rfTest::reset
+    set a [::rfTest::matrixVectors a [::rfTest::matrix]]
+    set b [::rfTest::matrixVectors b {11 {{1 0}} 12 {{2 0}} 21 {{3 0}} 22 {{4 0}}}]
+} -body {
+    catch {::rfutil::matMul2x2 $a $b -input vector} msg
+    string match *lengths*differ* $msg
+} -cleanup {::rfTest::reset} -result 1
+
+test vector.flags {dB and degree flags agree on both paths} -constraints rbc -setup {
+    ::rfTest::reset
+    set data {{3 4} {-1 2}}
+    set v [::rfTest::vector data $data]
+} -body {
+    list [::rfTest::close [::rfutil::mag $data -db] [::rfutil::mag $v -db -input vector]]\
+            [::rfTest::close [::rfutil::angle $data -deg] [::rfutil::angle $v -deg -input vector]]
+} -cleanup {::rfTest::reset} -result {1 1}
+
+test vector.empty {empty sweeps preserve result types and keys} -constraints rbc -setup {
+    ::rfTest::reset
+    set m {11 {} 12 {} 21 {} 22 {}}
+    set v [::rfTest::matrixVectors s $m]
+} -body {
+    set result [::rfutil::s2z $v -input vector -output vector -namespace ::rfTest::out]
+    lmap key {11 12 21 22} {set n [dict get $result $key]; list [$n length] [$n type]}
+} -cleanup {::rfTest::reset} -result {{0 complex} {0 complex} {0 complex} {0 complex}}
+
+test vector.realinput {real-valued parameters promote to complex results} -constraints rbc -setup {
+    ::rfTest::reset
+    set m {}
+    foreach {key values} {11 {2 3} 21 {1 1} 12 {1 1} 22 {4 5}} {
+        dict set m $key [::rfTest::vector s$key $values real]
+    }
+} -body {
+    set out [::rfutil::inv2x2 $m -input vector -output vector -namespace ::rfTest::out]
+    list [[dict get $out 11] type] [::rfTest::close [[dict get $out 11] range 0 end] {{0.5714285714285714 0}\
+                                                                                              {0.35714285714285715 0}}]
+} -cleanup {::rfTest::reset} -result {complex 1}
+
+test vector.offsets {read-only nonzero-offset inputs are copied without mutation} -constraints rbc -setup {
+    ::rfTest::reset
+    set v [::rfTest::vector data {{3 4} {5 12}}]
+    $v offset 10
+    $v readonly true
+} -body {
+    list [::rfutil::mag $v -input vector] [$v offset] [$v readonly]
+} -cleanup {::rfTest::reset} -result {{5.0 13.0} 10 1}
+
+test vector.invalidnames {name validation prevents output creation} -constraints rbc -setup {
+    ::rfTest::reset
+} -body {
+    list [catch {::rfutil::mag {{3 4}} -output vector -namespace {}}]\
+            [catch {::rfutil::mag {{3 4}} -output vector -name ::rfTest::x -names {result ::rfTest::y}}]\
+            [catch {::rfutil::mag {{3 4}} -output vector -names {unknown ::rfTest::x}}]\
+            [catch {::rfutil::mag {{3 4}} -output vector -name ::rfTest::missingParent::x}]\
+            [::rbc::vector names ::rfutil::work*::*]
+} -cleanup {::rfTest::reset} -result {1 1 1 1 {}}
+
+test vector.emptyall {all calculations support empty sweeps with real or complex outputs} -constraints rbc -setup {
+    ::rfTest::reset
+    set m [::rfTest::matrixVectors empty {11 {} 12 {} 21 {} 22 {}}]
+    set freq [::rfTest::vector freq {} real]
+} -body {
+    set ok 1
+    foreach op {s2z s2y z2s y2s z2y y2z s2t t2s zTEq yPEq cxxTEq lxxTEq cxxPEq lxxPEq inv2x2 matMul2x2 deemb mag\
+                        angle} {
+        set args {}
+        foreach arg [::rfutil::Signature $op] {
+            switch $arg {
+                z0 {
+                    lappend args {50 0}
+                }
+                freq {
+                    lappend args $freq
+                }
+                data {
+                    lappend args [dict get $m 11]
+                }
+                default {
+                    lappend args $m
+                }
+            }
+        }
+        set result [::rfutil::$op {*}$args -input vector -output vector -namespace ::rfTest::out]
+        if {$op in {mag angle}} {
+            set result [dict create result $result]
+        }
+        dict for {k v} $result {
+            if {[$v length] != 0} {
+                set ok 0
+            }
+        }
+    }
+    set ok
+} -cleanup {::rfTest::reset} -result 1
+
+cleanupTests

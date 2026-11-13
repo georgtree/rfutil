@@ -1,0 +1,54 @@
+package require tcltest 2
+namespace import ::tcltest::*
+package require rfutil 0.2
+
+test interface.defaults {legacy list defaults and atomic invalid updates} -body {
+    set before [::rfutil::configure]
+    set fail [catch {::rfutil::configure -input list -ifexists invalid}]
+    list $before $fail [expr {$before eq [::rfutil::configure]}]
+} -result {{-input list -output list -ifexists error} 1 1}
+
+test interface.configure.queries {all defaults and individual options use consistent query values} -body {
+    list [::rfutil::configure -input] [::rfutil::configure -output] [::rfutil::configure -ifexists]
+} -result {list list error}
+
+test interface.configure.update {argparse normalises unambiguous option and enum prefixes} -setup {
+    set saved [::rfutil::configure]
+} -body {
+    set settings [::rfutil::configure -inp li -out li -ifex rep]
+    list $settings [::rfutil::configure -ifex]
+} -cleanup {
+    ::rfutil::configure {*}$saved
+} -result {{-input list -output list -ifexists replace} replace}
+
+test interface.configure.errors {invalid requests leave all defaults unchanged} -body {
+    set saved [::rfutil::configure]
+    set result {}
+    foreach arguments {{-unknown} {-input invalid} {-input list -output} {-ifexists replace -unknown value}} {
+        lappend result [catch {::rfutil::configure {*}$arguments}] [expr {[::rfutil::configure] eq $saved}]
+    }
+    set result
+} -result {1 1 1 1 1 1 1 1}
+
+test interface.configure.help {argparse provides option help without changing defaults} -body {
+    set saved [::rfutil::configure]
+    ::rfutil::configure -help
+    expr {[::rfutil::configure] eq $saved}
+} -match glob -output {*-input*-output*-ifexists*} -result 1
+
+test interface.empty {empty lists are valid sweeps} -body {
+    list [::rfutil::s2z {11 {} 21 {} 12 {} 22 {}}] [::rfutil::mag {}] [::rfutil::angle {}]
+} -result {{11 {} 21 {} 12 {} 22 {}} {} {}}
+
+test interface.options {vector-only naming options are rejected in list mode} -body {
+    list [catch {::rfutil::mag {{3 4}} -name x}] [catch {::rfutil::mag {{3 4}} -namespace x}]\
+            [catch {::rfutil::mag {{3 4}} -names {result x}}]
+} -result {1 1 1}
+
+foreach op {s2z s2t t2s s2y z2s y2s z2y y2z zTEq cxxTEq lxxTEq yPEq cxxPEq lxxPEq inv2x2 matMul2x2 deemb mag angle} {
+    test interface.help.$op {public help includes the vector interface}\
+            -body [list catch [list ::rfutil::$op -help]] -result 0 -match glob\
+            -output {*-input*-output*-namespace*-names*-ifexists*}
+}
+
+cleanupTests

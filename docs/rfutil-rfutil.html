@@ -1,0 +1,1049 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>::rfutil &mdash; rfutil  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/manual.css?v=900fc402" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="rfutil: RF parameter utilities" href="rfutil.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            rfutil
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rfutil.html">rfutil: RF parameter utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rfutil.html#requirements-and-installation">Requirements and installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">::rfutil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#rf-network-parameter-utilities">RF network parameter utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#representations-and-defaults">Representations and defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#naming-and-ownership">Naming and ownership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numerical-scope">Numerical scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#build-test-and-documentation">Build, test and documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#angle"><code class="docutils literal notranslate"><span class="pre">angle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure"><code class="docutils literal notranslate"><span class="pre">configure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cxxpeq"><code class="docutils literal notranslate"><span class="pre">cxxPEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cxxteq"><code class="docutils literal notranslate"><span class="pre">cxxTEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deemb"><code class="docutils literal notranslate"><span class="pre">deemb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inv2x2"><code class="docutils literal notranslate"><span class="pre">inv2x2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lxxpeq"><code class="docutils literal notranslate"><span class="pre">lxxPEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lxxteq"><code class="docutils literal notranslate"><span class="pre">lxxTEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mag"><code class="docutils literal notranslate"><span class="pre">mag</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#matmul2x2"><code class="docutils literal notranslate"><span class="pre">matMul2x2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#s2t"><code class="docutils literal notranslate"><span class="pre">s2t</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#s2y"><code class="docutils literal notranslate"><span class="pre">s2y</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#s2z"><code class="docutils literal notranslate"><span class="pre">s2z</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#t2s"><code class="docutils literal notranslate"><span class="pre">t2s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#y2s"><code class="docutils literal notranslate"><span class="pre">y2s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#y2z"><code class="docutils literal notranslate"><span class="pre">y2z</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ypeq"><code class="docutils literal notranslate"><span class="pre">yPEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#z2s"><code class="docutils literal notranslate"><span class="pre">z2s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#z2y"><code class="docutils literal notranslate"><span class="pre">z2y</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zteq"><code class="docutils literal notranslate"><span class="pre">zTEq</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">rfutil</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">::rfutil</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rfutil-rfutil.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rfutil">
+<span id="r-rfutil"></span><span id="r-3a3arfutil"></span><h1>::rfutil<a class="headerlink" href="#rfutil" title="Link to this heading"></a></h1>
+</section>
+<section id="rf-network-parameter-utilities">
+<span id="r-rfutil-rf-network-parameter-utilities"></span><span id="r-3a3arfutilqzrf20network20parameter20utilities"></span><h1>RF network parameter utilities<a class="headerlink" href="#rf-network-parameter-utilities" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">rfutil</span></code> calculates two-port S, Z, Y and scattering-transfer parameters, equivalent T/pi circuit elements,
+matrix products and inverses, and fixture de-embedding. It also calculates complex magnitude and phase.</p>
+<section id="requirements">
+<span id="r-rfutil-requirements"></span><span id="r-3a3arfutilqzrequirements"></span><h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<p>List operation requires Tcl 8.6 or Tcl 9, Tcllib (<code class="docutils literal notranslate"><span class="pre">math::complexnumbers</span></code>, <code class="docutils literal notranslate"><span class="pre">math::constants</span></code>), and argparse 0.58
+or later. Vector operation additionally requires Tcl 9 and <code class="docutils literal notranslate"><span class="pre">rbc::vector</span></code> 0.8.5 or later. Use a current RBC build
+including complex vectors and <code class="docutils literal notranslate"><span class="pre">vector</span> <span class="pre">expr</span> <span class="pre">-name</span></code>. No Tk initialization, display or Cairo is required.</p>
+</section>
+<section id="representations-and-defaults">
+<span id="r-rfutil-representations-and-defaults"></span><span id="r-3a3arfutilqzrepresentations20and20defaults"></span><h2>Representations and defaults<a class="headerlink" href="#representations-and-defaults" title="Link to this heading"></a></h2>
+<p>A matrix is a dictionary with keys <code class="docutils literal notranslate"><span class="pre">11</span></code>, <code class="docutils literal notranslate"><span class="pre">12</span></code>, <code class="docutils literal notranslate"><span class="pre">21</span></code> and <code class="docutils literal notranslate"><span class="pre">22</span></code>. Each component contains a frequency sweep, not a
+single matrix element. In list mode, each value is a list of complex <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code> pairs. In vector mode, each
+value is an RBC vector name. Complex and real parameter vectors are accepted; matrix outputs are complex.
+Frequency vectors must be real. Equivalent capacitance/inductance, magnitude and phase outputs are real.</p>
+<p>Every numeric input of a call follows <code class="docutils literal notranslate"><span class="pre">-input</span></code>, including its frequency argument. The optional <code class="docutils literal notranslate"><span class="pre">z0</span></code> remains
+a single <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code> scalar in both modes. Mixed list/vector components within one call are not supported.
+This explicit convention matches <code class="docutils literal notranslate"><span class="pre">tclinterp</span></code> and avoids guessing whether a one-element list is a vector name.</p>
+<div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="nb">package</span><span class="w"> </span>require<span class="w"> </span>rfutil<span class="w"> </span><span class="mf">0.2</span>
+<span class="k">set</span><span class="w"> </span>s<span class="w"> </span><span class="k">[</span><span class="nb">dict</span><span class="w"> </span>create<span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.1</span><span class="w"> </span><span class="mf">0.2</span><span class="k">}}</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.02</span><span class="w"> </span><span class="mf">0.01</span><span class="k">}}</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.8</span><span class="w"> </span><span class="o">-</span><span class="mf">0.1</span><span class="k">}}</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.2</span><span class="w"> </span><span class="mf">0.1</span><span class="k">}}]</span>
+<span class="k">set</span><span class="w"> </span>z<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>s2z<span class="w"> </span><span class="nv">$s</span><span class="k">]</span>
+
+<span class="c"># Convert the result into named complex vectors.</span>
+<span class="k">set</span><span class="w"> </span>zv<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>s2z<span class="w"> </span><span class="nv">$s</span><span class="w"> </span><span class="o">-</span>output<span class="w"> </span>vector<span class="w"> </span><span class="o">-</span>namespace<span class="w"> </span><span class="o">::</span>network::z<span class="w"> </span><span class="o">-</span>names<span class="w"> </span><span class="k">{</span><span class="nv">11</span><span class="w"> </span>z11<span class="w"> </span><span class="mi">12</span><span class="w"> </span>z12<span class="w"> </span><span class="mi">21</span><span class="w"> </span>z21<span class="w"> </span><span class="mi">22</span><span class="w"> </span>z22<span class="k">}]</span>
+<span class="c"># Calculate a whole sweep using RBC expressions, returning lists.</span>
+<span class="k">set</span><span class="w"> </span>sAgain<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>z2s<span class="w"> </span><span class="nv">$zv</span><span class="w"> </span><span class="o">-</span>input<span class="w"> </span>vector<span class="w"> </span><span class="o">-</span>output<span class="w"> </span>list<span class="k">]</span>
+</pre></div>
+</div>
+<p>The options are independent: list/list uses the Tcllib backend; vector/list and vector/vector use whole-sweep
+RBC expressions; list/vector uses the scalar backend and converts its final results. Keep data in vectors
+across successive transformations to avoid repeated list conversion.</p>
+<p><code class="docutils literal notranslate"><span class="pre">rfutil::configure</span></code> supports all-settings queries, single-option queries, and atomic updates:</p>
+<div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="k">set</span><span class="w"> </span>saved<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>configure<span class="k">]</span>
+<span class="nv">rfutil</span><span class="o">::</span>configure<span class="w"> </span><span class="o">-</span>input<span class="w"> </span>vector<span class="w"> </span><span class="o">-</span>output<span class="w"> </span>vector<span class="w"> </span><span class="o">-</span>ifexists<span class="w"> </span>replace
+<span class="nv">rfutil</span><span class="o">::</span>configure<span class="w"> </span><span class="o">-</span>output
+<span class="nv">rfutil</span><span class="o">::</span>configure<span class="w"> </span><span class="k">{</span><span class="o">*</span><span class="k">}</span><span class="nv">$saved</span>
+</pre></div>
+</div>
+<p>Defaults are <code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list</span></code> and <code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error</span></code>. Per-call options override them. Selecting
+vector defaults checks that RBC can be loaded. Ordinary list calls and list-default queries do not load RBC.</p>
+</section>
+<section id="naming-and-ownership">
+<span id="r-rfutil-naming-and-ownership"></span><span id="r-3a3arfutilqznaming20and20ownership"></span><h2>Naming and ownership<a class="headerlink" href="#naming-and-ownership" title="Link to this heading"></a></h2>
+<p>Input names resolve in the caller’s namespace, then through Tcl command resolution. Literal vector names with
+parentheses are supported. Inputs are borrowed, never destroyed or modified by calculations unless explicitly
+chosen as replacement destinations. Read-only inputs and nonzero index offsets are accepted.</p>
+<p>For vector output:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-namespace</span></code> selects the output namespace, relative to the caller, creating missing parents. An empty name is an error.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-names</span></code> maps result fields to exact vector names. Matrix fields are <code class="docutils literal notranslate"><span class="pre">11</span></code>, <code class="docutils literal notranslate"><span class="pre">12</span></code>, <code class="docutils literal notranslate"><span class="pre">21</span></code>, <code class="docutils literal notranslate"><span class="pre">22</span></code>; equivalent-circuit fields are <code class="docutils literal notranslate"><span class="pre">z1/z2/z3</span></code>, <code class="docutils literal notranslate"><span class="pre">y1/y2/y3</span></code>, <code class="docutils literal notranslate"><span class="pre">c1/c2/c3</span></code> or <code class="docutils literal notranslate"><span class="pre">l1/l2/l3</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mag</span></code> and <code class="docutils literal notranslate"><span class="pre">angle</span></code> accept <code class="docutils literal notranslate"><span class="pre">-name</span></code> for their sole output, or the <code class="docutils literal notranslate"><span class="pre">result</span></code> field of <code class="docutils literal notranslate"><span class="pre">-names</span></code>, but not both.</p></li>
+<li><p>Omitted destinations use RBC’s <code class="docutils literal notranslate"><span class="pre">#auto</span></code> mechanism. A final <code class="docutils literal notranslate"><span class="pre">#auto</span></code> component is also supported explicitly.</p></li>
+<li><p>Fully-qualified destinations override <code class="docutils literal notranslate"><span class="pre">-namespace</span></code>; their parent namespace must already exist.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error</span></code> rejects existing commands. <code class="docutils literal notranslate"><span class="pre">replace</span></code> reuses writable RBC vectors of the required numeric type, preserving their identity. It never replaces arbitrary Tcl commands.</p></li>
+</ul>
+<p>Unknown fields, duplicate destinations, read-only outputs and type mismatches are rejected before output writes.
+Calculations complete before publishing, so destinations may alias inputs. Internal vectors are cleaned up on
+success and error; returned vectors belong to the caller and must be destroyed when no longer needed.
+Callbacks triggered by replacing vectors can have their own side effects; multiple destination updates are not
+a transaction against arbitrary user callbacks. Namespaces created for output are not removed on failure.</p>
+<div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="k">set</span><span class="w"> </span>magnitude<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>mag<span class="w"> </span><span class="k">[</span><span class="nb">dict</span><span class="w"> </span>get<span class="w"> </span><span class="nv">$zv</span><span class="w"> </span><span class="mi">11</span><span class="k">]</span><span class="w"> </span><span class="o">-</span>input<span class="w"> </span>vector<span class="w"> </span><span class="o">-</span>output<span class="w"> </span>vector<span class="w"> </span><span class="o">-</span>name<span class="w"> </span><span class="o">::</span>network::magnitude<span class="k">]</span>
+<span class="nv">rbc</span><span class="o">::</span>vector<span class="w"> </span>destroy<span class="w"> </span><span class="k">{</span><span class="o">*</span><span class="k">}[</span><span class="nb">dict</span><span class="w"> </span>values<span class="w"> </span><span class="nv">$zv</span><span class="k">]</span><span class="w"> </span><span class="nv">$magnitude</span>
+</pre></div>
+</div>
+</section>
+<section id="numerical-scope">
+<span id="r-rfutil-numerical-scope"></span><span id="r-3a3arfutilqznumerical20scope"></span><h2>Numerical scope<a class="headerlink" href="#numerical-scope" title="Link to this heading"></a></h2>
+<p>All input components and participating matrices must have equal lengths, including any frequency input. The
+caller must ensure that sample frequencies correspond; the package does not interpolate or store a frequency
+grid.  Empty sweeps return empty components. The vector backend rejects exactly zero conversion denominators,
+determinants and required frequency/reactance divisors before publishing results. Nearly singular data can
+still amplify numerical errors; no automatic regularisation is performed.</p>
+<p>The conversion formulas and transfer-matrix convention are retained from the original package. In particular,
+S-to-T divides by S21 and T-to-S divides by T22. This is a scattering-transfer matrix, not an ABCD matrix.
+The scalar reference impedance is common to both ports. The default reference impedance is <code class="docutils literal notranslate"><span class="pre">{50.0</span> <span class="pre">0.0}</span></code>.</p>
+</section>
+<section id="build-test-and-documentation">
+<span id="r-rfutil-build-test-and-documentation"></span><span id="r-3a3arfutilqzbuild2c20test20and20documentation"></span><h2>Build, test and documentation<a class="headerlink" href="#build-test-and-documentation" title="Link to this heading"></a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>./configure<span class="w"> </span>--with-tcl<span class="o">=</span>/path/to/tcl/lib<span class="w"> </span>--prefix<span class="o">=</span>/your/prefix
+make
+make<span class="w"> </span><span class="nb">test</span>
+make<span class="w"> </span>test-vector
+make<span class="w"> </span>doc
+make<span class="w"> </span>install
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> runs the original tests and extensions, skipping RBC-specific tests if RBC is unavailable.
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-vector</span></code> requires RBC and fails if it cannot load it. <code class="docutils literal notranslate"><span class="pre">TESTFLAGS</span></code> is forwarded to tcltest, for example
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span> <span class="pre">TESTFLAGS='-match</span> <span class="pre">vector.s2z.*'</span></code>. A failing test or test-file error causes a nonzero exit status.
+Use <code class="docutils literal notranslate"><span class="pre">TCLLIBPATH</span></code> to supply dependencies not installed in the selected interpreter’s search path.</p>
+<p>Documentation is generated from these Ruff sources and public procedure comments, first to Sphinx/RTD HTML and
+also to nroff. Install Ruff, Tcllib and Python packages <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> and <code class="docutils literal notranslate"><span class="pre">sphinx_rtd_theme</span></code>; select Python with
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doc</span> <span class="pre">DOC_PYTHON=/path/to/python</span></code>. Generated HTML is in <code class="docutils literal notranslate"><span class="pre">docs/index.html</span></code>; the manual page is
+<code class="docutils literal notranslate"><span class="pre">docs/rfutil.n</span></code>. Out-of-source builds put generated documentation in their own <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory.</p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> supports <code class="docutils literal notranslate"><span class="pre">DESTDIR</span></code>; documentation is installed if already generated. <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">uninstall</span></code> removes the
+installed package files and generated manual. <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code> removes generated docs while retaining Ruff sources
+and the maintained stylesheet. <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">dist</span></code> and <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">dist-zip</span></code> produce complete source archives, including the
+pre-generated configure script, tests and documentation sources. Neither archive bundles external dependencies.</p>
+</section>
+<section id="commands">
+<span id="r-rfutil-commands"></span><span id="r-3a3arfutilqzcommands"></span><h2>Commands<a class="headerlink" href="#commands" title="Link to this heading"></a></h2>
+<section id="angle">
+<span id="r-symbolqz3a3arfutil3a3aangle"></span><span id="index-1"></span><span id="index-0"></span><h3><code class="docutils literal notranslate"><span class="pre">angle</span></code><a class="headerlink" href="#angle" title="Link to this heading"></a></h3>
+<p>Calculates angle (phase) of complex number.</p>
+<pre class="literal-block"><strong>angle</strong> <em>data ?-deg? ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-deg</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Option to select angle in degrees units.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">data</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>List with complex data in form {real imag}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>list of angles.  With vector output, returns a real RBC vector name.</p>
+</section>
+<section id="configure">
+<span id="r-symbolqz3a3arfutil3a3aconfigure"></span><span id="index-3"></span><span id="index-2"></span><h3><code class="docutils literal notranslate"><span class="pre">configure</span></code><a class="headerlink" href="#configure" title="Link to this heading"></a></h3>
+<p>Queries or changes interpreter-local defaults atomically.</p>
+<pre class="literal-block"><strong>configure</strong> <em>?option?</em>
+<strong>configure</strong> <em>?-input list|vector? ?-output list|vector? ?-ifexists error|replace?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">policy</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Error or replace; initially error.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">mode</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>List or vector; initially list.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">mode</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>List or vector; initially list.</p>
+</dd>
+</dl>
+<p class="rubric">Return value</p>
+<p>all defaults, or the value of a single queried option.</p>
+</section>
+<section id="cxxpeq">
+<span id="r-symbolqz3a3arfutil3a3acxxpeq"></span><span id="index-5"></span><span id="index-4"></span><h3><code class="docutils literal notranslate"><span class="pre">cxxPEq</span></code><a class="headerlink" href="#cxxpeq" title="Link to this heading"></a></h3>
+<p>Calculates capacitive part equivalent P circuit elements values.</p>
+<pre class="literal-block"><strong>cxxPEq</strong> <em>freq yxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">freq</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Frequency values list.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">yxx</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>              C3
+               | |
+   o-----o-----| |-----o-----o
+   .     |     | |     |     .
+   .     |             |     .
+P1 .  C1---         C2---    . P2
+   .    ---           ---    .
+  \./    |             |    \./
+   .     |             |     .
+   o-----o-------------o-----o
+</pre></div>
+</div>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the form {c1 list c2 list c3 list} with capacitive part of equivalent elements admittance.
+With vector output, dictionary values are RBC vector names instead of lists.</p>
+</section>
+<section id="cxxteq">
+<span id="r-symbolqz3a3arfutil3a3acxxteq"></span><span id="index-7"></span><span id="index-6"></span><h3><code class="docutils literal notranslate"><span class="pre">cxxTEq</span></code><a class="headerlink" href="#cxxteq" title="Link to this heading"></a></h3>
+<p>Calculates capacitive part equivalent T circuit elements values.</p>
+<pre class="literal-block"><strong>cxxTEq</strong> <em>freq zxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">freq</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Frequency values list.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">zxx</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>       C1           C2
+        | |           | |
+   o----| |-----o-----| |----o
+   .    | |     |     | |    .
+   .            |            .
+P1 .         C3---           . P2
+   .           ---           .
+  \./           |           \./
+   .            |            .
+   o----------- o -----------o
+</pre></div>
+</div>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the form {c1 list c2 list c3 list} with capacitive part of equivalent elements impedance.
+With vector output, dictionary values are RBC vector names instead of lists.</p>
+</section>
+<section id="deemb">
+<span id="r-symbolqz3a3arfutil3a3adeemb"></span><span id="index-9"></span><span id="index-8"></span><h3><code class="docutils literal notranslate"><span class="pre">deemb</span></code><a class="headerlink" href="#deemb" title="Link to this heading"></a></h3>
+<p>Procedure for deembedding of DUT from test fixture.</p>
+<pre class="literal-block"><strong>deemb</strong> <em>sMeas sFixtL sFixtR ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">sFixtL</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>S-parameters matrix of left fixture in dictionary form {11 list 12 list 21 list 22 list}</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">sFixtR</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>S-parameters matrix of right fixture in dictionary form {11 list 12 list 21 list 22 list}</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">sMeas</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Measured s-parameters matrix in dictionary form {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>┌      ┐   ┌        ┐-1   ┌       ┐     ┌        ┐-1
+│ Tdut │ = │ Tfixtl │  x  │ Tmeas │  x  │ Tfixtr │
+└      ┘   └        ┘     └       ┘     └        ┘
+</pre></div>
+</div>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionaries with deembedded DUT s-matrix.  With vector output,
+dictionary values are RBC vector names instead of lists.</p>
+</section>
+<section id="inv2x2">
+<span id="r-symbolqz3a3arfutil3a3ainv2x2"></span><span id="index-11"></span><span id="index-10"></span><h3><code class="docutils literal notranslate"><span class="pre">inv2x2</span></code><a class="headerlink" href="#inv2x2" title="Link to this heading"></a></h3>
+<p>Calculates inverse matrix of input matrix with size 2x2.</p>
+<pre class="literal-block"><strong>inv2x2</strong> <em>mat ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">mat</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with resulted matrix.  With vector output, dictionary
+values are RBC vector names instead of lists.</p>
+</section>
+<section id="lxxpeq">
+<span id="r-symbolqz3a3arfutil3a3alxxpeq"></span><span id="index-13"></span><span id="index-12"></span><h3><code class="docutils literal notranslate"><span class="pre">lxxPEq</span></code><a class="headerlink" href="#lxxpeq" title="Link to this heading"></a></h3>
+<p>Calculates inductive part equivalent P circuit elements values.</p>
+<pre class="literal-block"><strong>lxxPEq</strong> <em>freq yxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">freq</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Frequency values list.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">yxx</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>               L3
+               ___
+   o-----o-----UUU-----o-----o
+   .     |             |     .
+   .  L1 C|         L2 C|    .
+P1 .     C|            C|    . P2
+   .     C|            C|    .
+  \./    |             |    \./
+   .     |             |     .
+   o-----o-------------o-----o
+</pre></div>
+</div>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the form {l1 list l2 list l3 list} with inductive part of equivalent elements impedance.
+With vector output, dictionary values are RBC vector names instead of lists.</p>
+</section>
+<section id="lxxteq">
+<span id="r-symbolqz3a3arfutil3a3alxxteq"></span><span id="index-15"></span><span id="index-14"></span><h3><code class="docutils literal notranslate"><span class="pre">lxxTEq</span></code><a class="headerlink" href="#lxxteq" title="Link to this heading"></a></h3>
+<p>Calculates inductive part equivalent T circuit elements values.</p>
+<pre class="literal-block"><strong>lxxTEq</strong> <em>freq zxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">freq</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Frequency values list.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">zxx</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>       L1            L2
+        ___           ___
+   o----UUU-----o-----UUU----o
+   .            |            .
+   .         L3 C|           .
+P1 .            C|           . P2
+   .            C|           .
+  \./           |           \./
+   .            |            .
+   o----------- o -----------o
+</pre></div>
+</div>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the form {l1 list l2 list l3 list} with inductive part of equivalent elements impedance.
+With vector output, dictionary values are RBC vector names instead of lists.</p>
+</section>
+<section id="mag">
+<span id="r-symbolqz3a3arfutil3a3amag"></span><span id="index-17"></span><span id="index-16"></span><h3><code class="docutils literal notranslate"><span class="pre">mag</span></code><a class="headerlink" href="#mag" title="Link to this heading"></a></h3>
+<p>Calculates magnitude of complex number.</p>
+<pre class="literal-block"><strong>mag</strong> <em>data ?-db? ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-db</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Option to select output magnitude in db scale.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">data</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>List with complex data in form {real imag}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>list of magnitudes.  With vector output, returns a real RBC vector name.</p>
+</section>
+<section id="matmul2x2">
+<span id="r-symbolqz3a3arfutil3a3amatmul2x2"></span><span id="index-19"></span><span id="index-18"></span><h3><code class="docutils literal notranslate"><span class="pre">matMul2x2</span></code><a class="headerlink" href="#matmul2x2" title="Link to this heading"></a></h3>
+<p>Calculates multiply matrices with 2x2 size.</p>
+<pre class="literal-block"><strong>matMul2x2</strong> <em>mat1 mat2 ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">mat1</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>First matrix in dictionary form {11 list 12 list 21 list 22 list}</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">mat2</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Second matrix in dictionary form {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionaries with resulted matrix.  With vector output, dictionary
+values are RBC vector names instead of lists.</p>
+</section>
+<section id="s2t">
+<span id="r-symbolqz3a3arfutil3a3as2t"></span><span id="index-21"></span><span id="index-20"></span><h3><code class="docutils literal notranslate"><span class="pre">s2t</span></code><a class="headerlink" href="#s2t" title="Link to this heading"></a></h3>
+<p>Converts 2-port s-parameters to transfer parameters.</p>
+<pre class="literal-block"><strong>s2t</strong> <em>sxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">sxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of s-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with transfer parameters.  With vector output, dictionary
+values are RBC vector names instead of lists.</p>
+</section>
+<section id="s2y">
+<span id="r-symbolqz3a3arfutil3a3as2y"></span><span id="index-23"></span><span id="index-22"></span><h3><code class="docutils literal notranslate"><span class="pre">s2y</span></code><a class="headerlink" href="#s2y" title="Link to this heading"></a></h3>
+<p>Converts 2-port s-parameters to y-parameters.</p>
+<pre class="literal-block"><strong>s2y</strong> <em>sxx ?z0? ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">sxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of s-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">z0</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference impedance in form of {real imag}, default is {50 0}, optional.</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with y-parameters.  With vector output, dictionary values
+are RBC vector names instead of lists.</p>
+</section>
+<section id="s2z">
+<span id="r-symbolqz3a3arfutil3a3as2z"></span><span id="index-25"></span><span id="index-24"></span><h3><code class="docutils literal notranslate"><span class="pre">s2z</span></code><a class="headerlink" href="#s2z" title="Link to this heading"></a></h3>
+<p>Converts 2-port s-parameters to z-parameters.</p>
+<pre class="literal-block"><strong>s2z</strong> <em>sxx ?z0? ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">sxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of s-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">z0</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference impedance in form of {real imag}, default is {50 0}, optional.</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with z-parameters.  With vector output, dictionary values
+are RBC vector names instead of lists.</p>
+</section>
+<section id="t2s">
+<span id="r-symbolqz3a3arfutil3a3at2s"></span><span id="index-27"></span><span id="index-26"></span><h3><code class="docutils literal notranslate"><span class="pre">t2s</span></code><a class="headerlink" href="#t2s" title="Link to this heading"></a></h3>
+<p>Converts 2-port transfer parameters to s-parameters.</p>
+<pre class="literal-block"><strong>t2s</strong> <em>txx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">txx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of transfer parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with s-parameters.  With vector output, dictionary values
+are RBC vector names instead of lists.</p>
+</section>
+<section id="y2s">
+<span id="r-symbolqz3a3arfutil3a3ay2s"></span><span id="index-29"></span><span id="index-28"></span><h3><code class="docutils literal notranslate"><span class="pre">y2s</span></code><a class="headerlink" href="#y2s" title="Link to this heading"></a></h3>
+<p>Converts 2-port y-parameters to s-parameters.</p>
+<pre class="literal-block"><strong>y2s</strong> <em>yxx ?z0? ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">yxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">z0</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Reference impedance in form of {real imag}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with s-parameters.  With vector output, dictionary values
+are RBC vector names instead of lists.</p>
+</section>
+<section id="y2z">
+<span id="r-symbolqz3a3arfutil3a3ay2z"></span><span id="index-31"></span><span id="index-30"></span><h3><code class="docutils literal notranslate"><span class="pre">y2z</span></code><a class="headerlink" href="#y2z" title="Link to this heading"></a></h3>
+<p>Converts 2-port y-parameters to z-parameters.</p>
+<pre class="literal-block"><strong>y2z</strong> <em>yxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">yxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with z-parameters.  With vector output, dictionary values
+are RBC vector names instead of lists.</p>
+</section>
+<section id="ypeq">
+<span id="r-symbolqz3a3arfutil3a3aypeq"></span><span id="index-33"></span><span id="index-32"></span><h3><code class="docutils literal notranslate"><span class="pre">yPEq</span></code><a class="headerlink" href="#ypeq" title="Link to this heading"></a></h3>
+<p>Calculates equivalent P circuit elements values.</p>
+<pre class="literal-block"><strong>yPEq</strong> <em>yxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">yxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>               Y3
+               ___
+   o-----o----|___|----o-----o
+   .     |             |     .
+   .    .-.           .-.    .
+P1 .    | |           | |    . P2
+   .  Y1| |         Y2| |    .
+   .    '-'           '-'    .
+  \./    |             |    \./
+   o-----o-------------o-----o
+</pre></div>
+</div>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the form {y1 list y2 list y3 list} with impedances of equivalent elements.  With vector
+output, dictionary values are RBC vector names instead of lists.</p>
+</section>
+<section id="z2s">
+<span id="r-symbolqz3a3arfutil3a3az2s"></span><span id="index-35"></span><span id="index-34"></span><h3><code class="docutils literal notranslate"><span class="pre">z2s</span></code><a class="headerlink" href="#z2s" title="Link to this heading"></a></h3>
+<p>Converts 2-port z-parameters to s-parameters.</p>
+<pre class="literal-block"><strong>z2s</strong> <em>zxx ?z0? ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">z0</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Reference impedance in form of {real imag}, default is {50 0}, optional.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">zxx</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with s-parameters.  With vector output, dictionary values
+are RBC vector names instead of lists.</p>
+</section>
+<section id="z2y">
+<span id="r-symbolqz3a3arfutil3a3az2y"></span><span id="index-37"></span><span id="index-36"></span><h3><code class="docutils literal notranslate"><span class="pre">z2y</span></code><a class="headerlink" href="#z2y" title="Link to this heading"></a></h3>
+<p>Converts 2-port z-parameters to y-parameters.</p>
+<pre class="literal-block"><strong>z2y</strong> <em>zxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">zxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the same form as input dictionary with y-parameters.  With vector output, dictionary values
+are RBC vector names instead of lists.</p>
+</section>
+<section id="zteq">
+<span id="r-symbolqz3a3arfutil3a3azteq"></span><span id="index-39"></span><span id="index-38"></span><h3><code class="docutils literal notranslate"><span class="pre">zTEq</span></code><a class="headerlink" href="#zteq" title="Link to this heading"></a></h3>
+<p>Calculates equivalent T circuit elements values.</p>
+<pre class="literal-block"><strong>zTEq</strong> <em>zxx ?options?</em></pre>
+<p class="rubric">Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Collision policy. Replacement requires a writable vector of the same type.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-input</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Input format; defaults to ::rfutil::configure -input.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-name</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Single destination for mag or angle; conflicts with the result entry of -names.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-names</span> <span class="pre">dictionary</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Result field to destination name mapping. Missing fields use #auto.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">-namespace</span> <span class="pre">name</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output namespace, created if missing; relative to the caller.</p>
+</dd>
+<dt class="field-even"><code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code><span class="colon">:</span></dt>
+<dd class="field-even"><p>Output format; defaults to ::rfutil::configure -output.</p>
+</dd>
+<dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">zxx</span></code><span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}. The form of dictionary is: {11 list 12 list 21 list 22 list}</p>
+</dd>
+</dl>
+<p class="rubric">Description</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>         Z1            Z2
+        ___           ___
+   o---|___|----o----|___|---o
+   .            |            .
+   .           .-.           .
+P1 .           | |           . P2
+   .         Z3| |           .
+   .           '-'           .
+  \./           |           \./
+   o----------- o -----------o
+</pre></div>
+</div>
+<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
+Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
+<p class="rubric">Return value</p>
+<p>dictionary of the form {z1 list z2 list z3 list} with impedances of equivalent elements.  With vector
+output, dictionary values are RBC vector names instead of lists.</p>
+<hr class="docutils" />
+<p class="centered">
+<strong>Copyright (c) George Yashin</strong></p></section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rfutil.html" class="btn btn-neutral float-left" title="rfutil: RF parameter utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright George Yashin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

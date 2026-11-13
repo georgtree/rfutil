@@ -1,0 +1,187 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rfutil: RF parameter utilities &mdash; rfutil  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/manual.css?v=900fc402" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="::rfutil" href="rfutil-rfutil.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            rfutil
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">rfutil: RF parameter utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#requirements-and-installation">Requirements and installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rfutil-rfutil.html">::rfutil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfutil-rfutil.html#rf-network-parameter-utilities">RF network parameter utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rfutil-rfutil.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rfutil-rfutil.html#representations-and-defaults">Representations and defaults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rfutil-rfutil.html#naming-and-ownership">Naming and ownership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rfutil-rfutil.html#numerical-scope">Numerical scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rfutil-rfutil.html#build-test-and-documentation">Build, test and documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rfutil-rfutil.html#commands">Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#angle"><code class="docutils literal notranslate"><span class="pre">angle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#configure"><code class="docutils literal notranslate"><span class="pre">configure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#cxxpeq"><code class="docutils literal notranslate"><span class="pre">cxxPEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#cxxteq"><code class="docutils literal notranslate"><span class="pre">cxxTEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#deemb"><code class="docutils literal notranslate"><span class="pre">deemb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#inv2x2"><code class="docutils literal notranslate"><span class="pre">inv2x2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#lxxpeq"><code class="docutils literal notranslate"><span class="pre">lxxPEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#lxxteq"><code class="docutils literal notranslate"><span class="pre">lxxTEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#mag"><code class="docutils literal notranslate"><span class="pre">mag</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#matmul2x2"><code class="docutils literal notranslate"><span class="pre">matMul2x2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#s2t"><code class="docutils literal notranslate"><span class="pre">s2t</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#s2y"><code class="docutils literal notranslate"><span class="pre">s2y</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#s2z"><code class="docutils literal notranslate"><span class="pre">s2z</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#t2s"><code class="docutils literal notranslate"><span class="pre">t2s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#y2s"><code class="docutils literal notranslate"><span class="pre">y2s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#y2z"><code class="docutils literal notranslate"><span class="pre">y2z</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#ypeq"><code class="docutils literal notranslate"><span class="pre">yPEq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#z2s"><code class="docutils literal notranslate"><span class="pre">z2s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#z2y"><code class="docutils literal notranslate"><span class="pre">z2y</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="rfutil-rfutil.html#zteq"><code class="docutils literal notranslate"><span class="pre">zTEq</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">rfutil</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">rfutil: RF parameter utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rfutil.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rfutil-rf-parameter-utilities">
+<span id="r-rfutil-rf-parameter-utilities"></span><span id="r-rfutil3a20rf20parameter20utilities"></span><h1>rfutil: RF parameter utilities<a class="headerlink" href="#rfutil-rf-parameter-utilities" title="Link to this heading"></a></h1>
+<p>Standalone two-port RF parameter calculations for Tcl, with optional RBC complex-vector input and output.
+Extracted from <a class="reference external" href="https://github.com/georgtree/tcl_tools">tcl_tools</a>; existing list calls remain compatible.</p>
+<div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="nb">package</span><span class="w"> </span>require<span class="w"> </span>rfutil<span class="w"> </span><span class="mf">0.2</span>
+<span class="k">set</span><span class="w"> </span>s<span class="w"> </span><span class="k">{</span><span class="nv">11</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.1</span><span class="w"> </span><span class="mf">0.2</span><span class="k">}}</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.02</span><span class="w"> </span><span class="mf">0.01</span><span class="k">}}</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.8</span><span class="w"> </span><span class="o">-</span><span class="mf">0.1</span><span class="k">}}</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.2</span><span class="w"> </span><span class="mf">0.1</span><span class="k">}}}</span>
+<span class="k">set</span><span class="w"> </span>z<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>s2z<span class="w"> </span><span class="nv">$s</span><span class="k">]</span>
+<span class="k">set</span><span class="w"> </span>zv<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>s2z<span class="w"> </span><span class="nv">$s</span><span class="w"> </span><span class="o">-</span>output<span class="w"> </span>vector<span class="w"> </span><span class="o">-</span>namespace<span class="w"> </span><span class="o">::</span>network::z<span class="k">]</span>
+<span class="k">set</span><span class="w"> </span>recovered<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>z2s<span class="w"> </span><span class="nv">$zv</span><span class="w"> </span><span class="o">-</span>input<span class="w"> </span>vector<span class="k">]</span>
+<span class="nv">rbc</span><span class="o">::</span>vector<span class="w"> </span>destroy<span class="w"> </span><span class="k">{</span><span class="o">*</span><span class="k">}[</span><span class="nb">dict</span><span class="w"> </span>values<span class="w"> </span><span class="nv">$zv</span><span class="k">]</span>
+</pre></div>
+</div>
+<p>All runtime implementation is in <code class="docutils literal notranslate"><span class="pre">rfutil.tcl</span></code>.``-input list|vector``, <code class="docutils literal notranslate"><span class="pre">-output</span> <span class="pre">list|vector</span></code>, <code class="docutils literal notranslate"><span class="pre">-namespace</span></code>, <code class="docutils literal notranslate"><span class="pre">-names</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">-ifexists</span> <span class="pre">error|replace</span></code> follow the tclinterp conventions.  <code class="docutils literal notranslate"><span class="pre">mag</span></code> and <code class="docutils literal notranslate"><span class="pre">angle</span></code> additionally accept <code class="docutils literal notranslate"><span class="pre">-name</span></code>. Package-wide
+defaults are controlled by <code class="docutils literal notranslate"><span class="pre">rfutil::configure</span></code>; defaults remain list/list/error. The Tcl-only RBC package is loaded only
+when needed.</p>
+<section id="requirements-and-installation">
+<span id="r-requirements-and-installation"></span><span id="r-requirements20and20installation"></span><h2>Requirements and installation<a class="headerlink" href="#requirements-and-installation" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Tcl 8.6 or 9 for lists; Tcl 9 for vectors.</p></li>
+<li><p>Tcllib and argparse 0.58 or later.</p></li>
+<li><p>Optional: current RBC 0.8.5 or later with complex vectors and <code class="docutils literal notranslate"><span class="pre">vector</span> <span class="pre">expr</span> <span class="pre">-name</span></code>.</p></li>
+<li><p>Documentation: Ruff, Sphinx and sphinx_rtd_theme.</p></li>
+</ul>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>./configure<span class="w"> </span>--with-tcl<span class="o">=</span>/path/to/tcl/lib<span class="w"> </span>--prefix<span class="o">=</span>/your/prefix
+make
+make<span class="w"> </span><span class="nb">test</span>
+make<span class="w"> </span>test-vector<span class="w">                   </span><span class="c1"># requires actual RBC; no display needed</span>
+make<span class="w"> </span>doc<span class="w">                          </span><span class="c1"># optional</span>
+make<span class="w"> </span>install
+</pre></div>
+</div>
+<p>On Windows, run configure/make in MSYS2 with your Tcl installation. The package itself is pure Tcl.
+You can also add the unpacked directory directly to <code class="docutils literal notranslate"><span class="pre">auto_path</span></code>, without configuring or installing it.
+Use <code class="docutils literal notranslate"><span class="pre">TCLLIBPATH</span></code> for dependencies and <code class="docutils literal notranslate"><span class="pre">TESTFLAGS</span></code> for test selection.</p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">uninstall</span></code>, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code>, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">distclean</span></code>, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">dist</span></code> (source tar.gz) and <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">dist-zip</span></code> are provided.
+Installation honours <code class="docutils literal notranslate"><span class="pre">DESTDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">--libdir</span></code>, <code class="docutils literal notranslate"><span class="pre">--datadir</span></code> and <code class="docutils literal notranslate"><span class="pre">--mandir</span></code>. A generated configure script is included;
+Autoconf is only needed after editing configure.ac.</p>
+<p>The namespace preamble in <code class="docutils literal notranslate"><span class="pre">rfutil.tcl</span></code> documents representation, naming, ownership and numerical conventions.
+Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doc</span></code> to produce the RTD HTML manual and nroff man page from Ruff sources.</p>
+<hr class="docutils" />
+<p class="centered">
+<strong>Copyright (c) George Yashin</strong></p></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rfutil-rfutil.html" class="btn btn-neutral float-right" title="::rfutil" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright George Yashin.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
