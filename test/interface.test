@@ -40,6 +40,32 @@ test interface.empty {empty lists are valid sweeps} -body {
     list [::rfutil::s2z {11 {} 21 {} 12 {} 22 {}}] [::rfutil::mag {}] [::rfutil::angle {}]
 } -result {{11 {} 21 {} 12 {} 22 {}} {} {}}
 
+# Every list operation must retain its result shape when the shared sample loop is empty.
+foreach {op arguments expected} {
+    s2z {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    s2t {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    t2s {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    s2y {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    z2s {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    y2s {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    z2y {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    y2z {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    zTEq {{11 {} 21 {} 12 {} 22 {}}} {z1 {} z2 {} z3 {}}
+    cxxTEq {{} {11 {} 21 {} 12 {} 22 {}}} {c1 {} c2 {} c3 {}}
+    lxxTEq {{} {11 {} 21 {} 12 {} 22 {}}} {l1 {} l2 {} l3 {}}
+    yPEq {{11 {} 21 {} 12 {} 22 {}}} {y1 {} y2 {} y3 {}}
+    cxxPEq {{} {11 {} 21 {} 12 {} 22 {}}} {c1 {} c2 {} c3 {}}
+    lxxPEq {{} {11 {} 21 {} 12 {} 22 {}}} {l1 {} l2 {} l3 {}}
+    inv2x2 {{11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    matMul2x2 {{11 {} 21 {} 12 {} 22 {}} {11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    deemb {{11 {} 21 {} 12 {} 22 {}} {11 {} 21 {} 12 {} 22 {}} {11 {} 21 {} 12 {} 22 {}}} {11 {} 21 {} 12 {} 22 {}}
+    mag {{}} {}
+    angle {{}} {}
+} {
+    test interface.empty.$op {empty list sweeps preserve all result fields} \
+        -body [list ::rfutil::$op {*}$arguments] -result $expected
+}
+
 test interface.options {vector-only naming options are rejected in list mode} -body {
     list [catch {::rfutil::mag {{3 4}} -name x}] [catch {::rfutil::mag {{3 4}} -namespace x}]\
             [catch {::rfutil::mag {{3 4}} -names {result x}}]

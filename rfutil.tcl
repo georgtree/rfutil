@@ -867,8 +867,8 @@ proc ::rfutil::Dispatch {op caller options} {
     # options - Parsed argument dictionary from Parse; representation defaults may be absent.
     #
     # Applies interpreter-local defaults, checks destination option combinations and validates lengths across all
-    # inputs. Vector inputs are resolved in caller; frequency vectors must be real. List input selects List_*
-    # calculations, while vector input selects VectorCalculate. List results can subsequently be published as vectors.
+    # inputs. Vector inputs are resolved in caller; frequency vectors must be real. List input selects ListCalculate,
+    # while vector input selects VectorCalculate. List results can subsequently be published as vectors.
     #
     # Creates a private work namespace and removes its temporary vectors and namespace in a finally block.
     # Inputs are borrowed. Output vectors belong to the caller and may intentionally replace input vectors under
@@ -960,19 +960,7 @@ proc ::rfutil::Dispatch {op caller options} {
         if {$input eq {vector}} {
             set result [VectorCalculate $op $options $work]
         } else {
-            set argv {}
-            foreach arg [Signature $op] {
-                lappend argv [dict get $options $arg]
-            }
-            foreach flag {db deg} {
-                if {[dict exists $options $flag]} {
-                    lappend argv [dict get $options $flag]
-                }
-            }
-            set result [List_$op {*}$argv]
-            if {$op in {mag angle}} {
-                set result [dict create result $result]
-            }
+            set result [ListCalculate $op $options]
         }
         if {$output eq {vector}} {
             set result [Publish $result $input $caller $options $work]
@@ -1124,620 +1112,172 @@ proc ::rfutil::compLen {dict} {
 
 
 
-proc ::rfutil::List_s2z {sxx z0} {
-    # Converts 2-port s-parameters to z-parameters.
-    # sxx - Two-port S-parameter dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    # z0 - Common scalar reference impedance as a {real imag} pair.
+proc ::rfutil::ListCalculate {op options} {
+    # Calculates an entire RF sweep using Tcllib complex arithmetic.
+    # op - Supported public calculation name, already validated by the dispatch layer.
+    # options - Parsed inputs with aligned component lists, scalar z0 when needed, and db/deg flags when applicable.
     #
-    # Uses the common-reference two-port S-to-Z formulas and the determinant of I-S.
+    # Dispatch validates input lengths. Unpacks component lists once, evaluates each sample through the operation
+    # switch and collects the result fields. Inputs are unchanged and RBC is not required. De-embedding recursively
+    # composes transfer conversion, inversion and multiplication, following the vector backend's routing.
     #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
+    # Preserves the scalar formulas and their arithmetic order, including the explicit singular-matrix error for
+    # inv2x2. Tcllib arithmetic errors propagate to the caller. Publish handles any requested vector output.
     #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set z11 {}
-    set z12 {}
-    set z21 {}
-    set z22 {}
-    ::rfutil::compLen $sxx
-    set len [llength [dict get $sxx 11]]
-    set 1c [complex 1 0]
-    set 2c [complex 2 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $sxx 11] $i]
-        set 21 [lindex [dict get $sxx 21] $i]
-        set 12 [lindex [dict get $sxx 12] $i]
-        set 22 [lindex [dict get $sxx 22] $i]
-        lappend z11 [* $z0 [/ [+ [* [+ $1c $11] [- $1c $22]] [* $12 $21]] [- [* [- $1c $11] [- $1c $22]] [* $12 $21]]]]
-        lappend z12 [* $z0 [/ [* $2c $12] [- [* [- $1c $11] [- $1c $22]] [* $12 $21] ]]]
-        lappend z21 [* $z0 [/ [* $2c $21] [- [* [- $1c $11] [- $1c $22]] [* $12 $21] ]]]
-        lappend z22 [* $z0 [/ [+ [* [- $1c $11] [+ $1c $22]] [* $12 $21]] [- [* [- $1c $11] [- $1c $22]] [* $12 $21]]]]
-    }
-    return [dict create 11 $z11 21 $z21 12 $z12 22 $z22]
-}
-
-
-
-proc ::rfutil::List_s2t {sxx} {
-    # Converts 2-port s-parameters to transfer parameters.
-    # sxx - Two-port S-parameter dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Uses the existing scattering-transfer convention, dividing by S21 at each sample; this is not ABCD conversion.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set t11 {}
-    set t12 {}
-    set t21 {}
-    set t22 {}
-    ::rfutil::compLen $sxx
-    set len [llength [dict get $sxx 11]]
-    set 1c [complex 1 0]
-    set m1c [complex -1 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $sxx 11] $i]
-        set 21 [lindex [dict get $sxx 21] $i]
-        set 12 [lindex [dict get $sxx 12] $i]
-        set 22 [lindex [dict get $sxx 22] $i]
-        lappend t11 [- $12 [/ [* $11 $22] $21]]
-        lappend t12 [/ $11 $21]
-        lappend t21 [* $m1c [/ $22 $21]]
-        lappend t22 [/ $1c $21]
-    }
-    return [dict create 11 $t11 21 $t21 12 $t12 22 $t22]
-}
-
-
-
-proc ::rfutil::List_t2s {txx} {
-    # Converts 2-port transfer parameters to s-parameters.
-    # txx - Two-port scattering-transfer dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Reverses the existing scattering-transfer convention, dividing by T22 at each sample.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set s11 {}
-    set s12 {}
-    set s21 {}
-    set s22 {}
-    ::rfutil::compLen $txx
-    set len [llength [dict get $txx 11]]
-    set 1c [complex 1 0]
-    set m1c [complex -1 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $txx 11] $i]
-        set 21 [lindex [dict get $txx 21] $i]
-        set 12 [lindex [dict get $txx 12] $i]
-        set 22 [lindex [dict get $txx 22] $i]
-        lappend s11 [/ $12 $22]
-        lappend s12 [- $11 [/ [* $12 $21] $22]]
-        lappend s21 [/ $1c $22]
-        lappend s22 [* $m1c [/ $21 $22]]
-    }
-    return [dict create 11 $s11 21 $s21 12 $s12 22 $s22]
-}
-
-
-
-proc ::rfutil::List_s2y {sxx z0} {
-    # Converts 2-port s-parameters to y-parameters.
-    # sxx - Two-port S-parameter dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    # z0 - Common scalar reference impedance as a {real imag} pair.
-    #
-    # Uses the common-reference two-port S-to-Y formulas and the determinant of I+S.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set y11 {}
-    set y12 {}
-    set y21 {}
-    set y22 {}
-    ::rfutil::compLen $sxx
-    set len [llength [dict get $sxx 11]]
-    set 1c [complex 1 0]
-    set 2c [complex 2 0]
-    set m2c [complex -2 0]
-    set y0 [pow $z0 [complex -1 0]]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $sxx 11] $i]
-        set 21 [lindex [dict get $sxx 21] $i]
-        set 12 [lindex [dict get $sxx 12] $i]
-        set 22 [lindex [dict get $sxx 22] $i]
-        lappend y11 [* $y0 [/ [+ [* [- $1c $11] [+ $1c $22]] [* $12 $21]] [- [* [+ $1c $11] [+ $1c $22]] [* $12 $21]]]]
-        lappend y12 [* $y0 [/ [* $m2c $12] [- [* [+ $1c $11] [+ $1c $22]] [* $12 $21] ]]]
-        lappend y21 [* $y0 [/ [* $m2c $21] [- [* [+ $1c $11] [+ $1c $22]] [* $12 $21] ]]]
-        lappend y22 [* $y0 [/ [+ [* [+ $1c $11] [- $1c $22]] [* $12 $21]] [- [* [+ $1c $11] [+ $1c $22]] [* $12 $21]]]]
-    }
-    return [dict create 11 $y11 21 $y21 12 $y12 22 $y22]
-}
-
-
-
-proc ::rfutil::List_z2s {zxx z0} {
-    # Converts 2-port z-parameters to s-parameters.
-    # zxx - Two-port impedance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    # z0 - Common scalar reference impedance as a {real imag} pair.
-    #
-    # Uses the common-reference two-port Z-to-S formulas.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set s11 {}
-    set s12 {}
-    set s21 {}
-    set s22 {}
-    ::rfutil::compLen $zxx
-    set len [llength [dict get $zxx 11]]
-    set 1c [complex 1 0]
-    set 2c [complex 2 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $zxx 11] $i]
-        set 21 [lindex [dict get $zxx 21] $i]
-        set 12 [lindex [dict get $zxx 12] $i]
-        set 22 [lindex [dict get $zxx 22] $i]
-        lappend s11 [/ [- [* [- $11 $z0] [+ $22 $z0]] [* $12 $21]] [- [* [+ $11 $z0] [+ $22 $z0]] [* $12 $21]]]
-        lappend s12 [/ [* [* $2c $12] $z0] [- [* [+ $11 $z0] [+ $22 $z0]] [* $12 $21]]]
-        lappend s21 [/ [* [* $2c $21] $z0] [- [* [+ $11 $z0] [+ $22 $z0]] [* $12 $21]]]
-        lappend s22 [/ [- [* [+ $11 $z0] [- $22 $z0]] [* $12 $21]] [- [* [+ $11 $z0] [+ $22 $z0]] [* $12 $21]]]
-    }
-    return [dict create 11 $s11 21 $s21 12 $s12 22 $s22]
-}
-
-
-
-proc ::rfutil::List_y2s {yxx z0} {
-    # Converts 2-port y-parameters to s-parameters.
-    # yxx - Two-port admittance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    # z0 - Common scalar reference impedance as a {real imag} pair.
-    #
-    # Uses the common-reference two-port Y-to-S formulas with reference admittance 1/z0.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set s11 {}
-    set s12 {}
-    set s21 {}
-    set s22 {}
-    ::rfutil::compLen $yxx
-    set len [llength [dict get $yxx 11]]
-    set 1c [complex 1 0]
-    set 2c [complex 2 0]
-    set m2c [complex -2 0]
-    set y0 [pow $z0 [complex -1 0]]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $yxx 11] $i]
-        set 21 [lindex [dict get $yxx 21] $i]
-        set 12 [lindex [dict get $yxx 12] $i]
-        set 22 [lindex [dict get $yxx 22] $i]
-        lappend s11 [/ [+ [* [- $y0 $11 ] [+ $y0 $22]] [* $12 $21]] [- [* [+ $y0 $11] [+ $y0 $22]] [* $12 $21]]]
-        lappend s12 [/ [* [* $m2c $12] $y0] [- [* [+ $y0 $11] [+ $y0 $22]] [* $12 $21]]]
-        lappend s21 [/ [* [* $m2c $21] $y0] [- [* [+ $y0 $11] [+ $y0 $22]] [* $12 $21]]]
-        lappend s22 [/ [+ [* [+ $y0 $11 ] [- $y0 $22]] [* $12 $21]] [- [* [+ $y0 $11] [+ $y0 $22]] [* $12 $21]]]
-    }
-    return [dict create 11 $s11 21 $s21 12 $s12 22 $s22]
-}
-
-
-
-proc ::rfutil::List_z2y {zxx} {
-    # Converts 2-port z-parameters to y-parameters.
-    # zxx - Two-port impedance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Inverts each 2-by-2 impedance matrix using its determinant.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set y11 {}
-    set y12 {}
-    set y21 {}
-    set y22 {}
-    ::rfutil::compLen $zxx
-    set len [llength [dict get $zxx 11]]
-    set m1c [complex -1 0]
-    set 2c [complex 2 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $zxx 11] $i]
-        set 21 [lindex [dict get $zxx 21] $i]
-        set 12 [lindex [dict get $zxx 12] $i]
-        set 22 [lindex [dict get $zxx 22] $i]
-        lappend y11 [/ $22 [- [* $11 $22] [* $12 $21]]]
-        lappend y12 [/ [* $12 $m1c] [- [* $11 $22] [* $12 $21]]]
-        lappend y21 [/ [* $21 $m1c] [- [* $11 $22] [* $12 $21]]]
-        lappend y22 [/ $11 [- [* $11 $22] [* $12 $21]]]
-    }
-    return [dict create 11 $y11 21 $y21 12 $y12 22 $y22]
-}
-
-
-
-proc ::rfutil::List_y2z {yxx} {
-    # Converts 2-port y-parameters to z-parameters.
-    # yxx - Two-port admittance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Inverts each 2-by-2 admittance matrix using its determinant.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set z11 {}
-    set z12 {}
-    set z21 {}
-    set z22 {}
-    ::rfutil::compLen $yxx
-    set len [llength [dict get $yxx 11]]
-    set m1c [complex -1 0]
-    set 2c [complex 2 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $yxx 11] $i]
-        set 21 [lindex [dict get $yxx 21] $i]
-        set 12 [lindex [dict get $yxx 12] $i]
-        set 22 [lindex [dict get $yxx 22] $i]
-        lappend z11 [/ $22 [- [* $11 $22] [* $12 $21]]]
-        lappend z12 [/ [* $12 $m1c] [- [* $11 $22] [* $12 $21]]]
-        lappend z21 [/ [* $21 $m1c] [- [* $11 $22] [* $12 $21]]]
-        lappend z22 [/ $11 [- [* $11 $22] [* $12 $21]]]
-    }
-    return [dict create 11 $z11 21 $z21 12 $z12 22 $z22]
-}
-
-
-
-proc ::rfutil::List_zTEq {zxx} {
-    # Calculates equivalent T circuit elements values.
-    # zxx - Two-port impedance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Computes z1=Z11-Z21, z2=Z22-Z21 and z3=Z21, retaining the original reciprocal-network convention.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys z1, z2, z3 and complex-pair lists; empty components for an empty sweep.
-    set z1 {}
-    set z2 {}
-    set z3 {}
-    ::rfutil::compLen $zxx
-    set len [llength [dict get $zxx 11]]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $zxx 11] $i]
-        set 21 [lindex [dict get $zxx 21] $i]
-        set 22 [lindex [dict get $zxx 22] $i]
-        lappend z1 [- $11 $21]
-        lappend z2 [- $22 $21]
-        lappend z3 $21
-    }
-    return [dict create z1 $z1 z2 $z2 z3 $z3]
-}
-
-
-
-proc ::rfutil::List_cxxTEq {freq zxx} {
-    # Calculates capacitive part equivalent T circuit elements values.
-    # freq - Real frequency list in hertz, aligned with all parameter component lists.
-    # zxx - Two-port impedance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Obtains T-equivalent impedances with List_zTEq and computes -1/(2*pi*f*imag(z)) for each element.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys c1, c2, c3 and real-value lists; empty components for an empty sweep.
-    set c1 {}
-    set c2 {}
-    set c3 {}
-    ::rfutil::compLen [dict merge [dict create freq $freq] $zxx]
+    # Returns: Dictionary of result fields and lists; mag and angle use the field result. Empty sweeps retain all
+    # fields.
     variable pi
-    set zEq [::rfutil::List_zTEq $zxx]
-    set 1c [complex 1 0]
-    set len [llength $freq]
-    for {set i 0} {$i<$len} {incr i} {
-        set freqVal [lindex $freq $i]
-        set z1 [lindex [dict get $zEq z1] $i]
-        set z2 [lindex [dict get $zEq z2] $i]
-        set z3 [lindex [dict get $zEq z3] $i]
-        lappend c1 [expr {-1/(2*$pi*$freqVal*[imag $z1])}]
-        lappend c2 [expr {-1/(2*$pi*$freqVal*[imag $z2])}]
-        lappend c3 [expr {-1/(2*$pi*$freqVal*[imag $z3])}]
-    }
-    return [dict create c1 $c1 c2 $c2 c3 $c3]
-}
-
-
-
-proc ::rfutil::List_lxxTEq {freq zxx} {
-    # Calculates inductive part equivalent T circuit elements values.
-    # freq - Real frequency list in hertz, aligned with all parameter component lists.
-    # zxx - Two-port impedance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Obtains T-equivalent impedances with List_zTEq and computes imag(z)/(2*pi*f) for each element.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys l1, l2, l3 and real-value lists; empty components for an empty sweep.
-    set l1 {}
-    set l2 {}
-    set l3 {}
-    ::rfutil::compLen [dict merge [dict create freq $freq] $zxx]
-    variable pi
-    set zEq [::rfutil::List_zTEq $zxx]
-    set len [llength $freq]
-    for {set i 0} {$i<$len} {incr i} {
-        set freqVal [lindex $freq $i]
-        set z1 [lindex [dict get $zEq z1] $i]
-        set z2 [lindex [dict get $zEq z2] $i]
-        set z3 [lindex [dict get $zEq z3] $i]
-        lappend l1 [expr {[imag $z1]/(2*$pi*$freqVal)}]
-        lappend l2 [expr {[imag $z2]/(2*$pi*$freqVal)}]
-        lappend l3 [expr {[imag $z3]/(2*$pi*$freqVal)}]
-    }
-    return [dict create l1 $l1 l2 $l2 l3 $l3]
-}
-
-
-
-proc ::rfutil::List_yPEq {yxx} {
-    # Calculates equivalent P circuit elements values.
-    # yxx - Two-port admittance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Computes y1=Y11+Y21, y2=Y22+Y21 and y3=-Y21, retaining the original reciprocal-network convention.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys y1, y2, y3 and complex-pair lists; empty components for an empty sweep.
-    set y1 {}
-    set y2 {}
-    set y3 {}
-    ::rfutil::compLen $yxx
-    set len [llength [dict get $yxx 11]]
-    set m1c [complex -1 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set 11 [lindex [dict get $yxx 11] $i]
-        set 21 [lindex [dict get $yxx 21] $i]
-        set 22 [lindex [dict get $yxx 22] $i]
-        lappend y1 [+ $11 $21]
-        lappend y2 [+ $22 $21]
-        lappend y3 [* $m1c $21]
-    }
-    return [dict create y1 $y1 y2 $y2 y3 $y3]
-}
-
-
-
-proc ::rfutil::List_cxxPEq {freq yxx} {
-    # Calculates capacitive part equivalent P circuit elements values.
-    # freq - Real frequency list in hertz, aligned with all parameter component lists.
-    # yxx - Two-port admittance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Obtains pi-equivalent admittances with List_yPEq and computes imag(y)/(2*pi*f) for each element.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys c1, c2, c3 and real-value lists; empty components for an empty sweep.
-    set c1 {}
-    set c2 {}
-    set c3 {}
-    ::rfutil::compLen [dict merge [dict create freq $freq] $yxx]
-    variable pi
-    set yEq [::rfutil::List_yPEq $yxx]
-    set len [llength $freq]
-    for {set i 0} {$i<$len} {incr i} {
-        set freqVal [lindex $freq $i]
-        set y1 [lindex [dict get $yEq y1] $i]
-        set y2 [lindex [dict get $yEq y2] $i]
-        set y3 [lindex [dict get $yEq y3] $i]
-        lappend c1 [expr {[imag $y1]/(2*$pi*$freqVal)}]
-        lappend c2 [expr {[imag $y2]/(2*$pi*$freqVal)}]
-        lappend c3 [expr {[imag $y3]/(2*$pi*$freqVal)}]
-    }
-    return [dict create c1 $c1 c2 $c2 c3 $c3]
-}
-
-
-
-proc ::rfutil::List_lxxPEq {freq yxx} {
-    # Calculates inductive part equivalent P circuit elements values.
-    # freq - Real frequency list in hertz, aligned with all parameter component lists.
-    # yxx - Two-port admittance dictionary with keys 11, 12, 21, 22 and lists of {real imag} pairs.
-    #
-    # Obtains pi-equivalent admittances with List_yPEq and computes -1/(2*pi*f*imag(y)) for each element.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys l1, l2, l3 and real-value lists; empty components for an empty sweep.
-    set l1 {}
-    set l2 {}
-    set l3 {}
-    ::rfutil::compLen [dict merge [dict create freq $freq] $yxx]
-    variable pi
-    set yEq [::rfutil::List_yPEq $yxx]
-    set len [llength $freq]
-    for {set i 0} {$i<$len} {incr i} {
-        set freqVal [lindex $freq $i]
-        set y1 [lindex [dict get $yEq y1] $i]
-        set y2 [lindex [dict get $yEq y2] $i]
-        set y3 [lindex [dict get $yEq y3] $i]
-        lappend l1 [expr {-1/(2*$pi*$freqVal*[imag $y1])}]
-        lappend l2 [expr {-1/(2*$pi*$freqVal*[imag $y2])}]
-        lappend l3 [expr {-1/(2*$pi*$freqVal*[imag $y3])}]
-    }
-    return [dict create l1 $l1 l2 $l2 l3 $l3]
-}
-
-
-
-proc ::rfutil::List_inv2x2 {mat} {
-    # Calculates inverse matrix of input matrix with size 2x2.
-    # mat - Two-port matrix dictionary with keys 11, 12, 21, 22 and complex-pair lists.
-    #
-    # Uses the closed-form 2-by-2 inverse and explicitly rejects an exactly zero complex determinant.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set 11 {}
-    set 12 {}
-    set 21 {}
-    set 22 {}
-    ::rfutil::compLen $mat
-    set len [llength [dict get $mat 11]]
-    set 1c [complex 1 0]
-    set m1c [complex -1 0]
-    for {set i 0} {$i<$len} {incr i} {
-        set a [lindex [dict get $mat 11] $i]
-        set b [lindex [dict get $mat 12] $i]
-        set c [lindex [dict get $mat 21] $i]
-        set d [lindex [dict get $mat 22] $i]
-        set det [- [* $a $d] [* $b $c]]
-        if {([real $det]==0.0) && ([imag $det]==0.0)} {
-            error "Matrix can't be inverted"
-        }
-        set rec [/ $1c $det]
-        lappend 11 [* $rec $d]
-        lappend 12 [* $rec [* $m1c $b]]
-        lappend 21 [* $rec [* $m1c $c]]
-        lappend 22 [* $rec $a]
-    }
-    return [dict create 11 $11 21 $21 12 $12 22 $22]
-}
-
-
-
-proc ::rfutil::List_matMul2x2 {mat1 mat2} {
-    # Calculates multiply matrices with 2x2 size.
-    # mat1 - Left matrix dictionary, with complex-pair component lists.
-    # mat2 - Right matrix dictionary, with component lists aligned with mat1.
-    #
-    # Multiplies mat1 by mat2 independently at each sample. Dispatch must check lengths between matrices;
-    # this helper only checks component lengths within each matrix.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    set 11 {}
-    set 12 {}
-    set 21 {}
-    set 22 {}
-    ::rfutil::compLen [dict merge $mat1 $mat2]
-    set len1 [llength [dict get $mat1 11]]
-    ::rfutil::compLen $mat1
-    ::rfutil::compLen $mat2
-    for {set i 0} {$i<$len1} {incr i} {
-        set a1 [lindex [dict get $mat1 11] $i]
-        set b1 [lindex [dict get $mat1 12] $i]
-        set c1 [lindex [dict get $mat1 21] $i]
-        set d1 [lindex [dict get $mat1 22] $i]
-        set a2 [lindex [dict get $mat2 11] $i]
-        set b2 [lindex [dict get $mat2 12] $i]
-        set c2 [lindex [dict get $mat2 21] $i]
-        set d2 [lindex [dict get $mat2 22] $i]
-        lappend 11 [+ [* $a1 $a2] [* $b1 $c2]]
-        lappend 12 [+ [* $a1 $b2] [* $b1 $d2]]
-        lappend 21 [+ [* $c1 $a2] [* $d1 $c2]]
-        lappend 22 [+ [* $c1 $b2] [* $d1 $d2]]
-    }
-    return [dict create 11 $11 21 $21 12 $12 22 $22]
-}
-
-
-
-proc ::rfutil::List_deemb {sMeas sFixtL sFixtR} {
-    # Procedure for deembedding of DUT from test fixture.
-    # sMeas - Measured S-parameter dictionary, with complex-pair component lists.
-    # sFixtL - Left-fixture S-parameter dictionary on the same frequency grid as sMeas.
-    # sFixtR - Right-fixture S-parameter dictionary on the same frequency grid as sMeas.
-    #
-    # Converts to scattering-transfer parameters and evaluates inverse(Tleft)*Tmeasured*inverse(Tright),
-    # then converts back to S parameters. Dispatch must validate lengths between the three networks.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # the caller supplies aligned component lists on a common frequency grid.
-    #
-    # Returns: Dictionary with keys 11, 21, 12, 22 and complex-pair lists; empty components for an empty sweep.
-    ::rfutil::compLen [dict merge $sMeas $sFixtL $sFixtR]
-    set tMeas [::rfutil::List_s2t $sMeas]
-    set tFixtL [::rfutil::List_inv2x2 [::rfutil::List_s2t $sFixtL]]
-    set tFixtR [::rfutil::List_inv2x2 [::rfutil::List_s2t $sFixtR]]
-    set tDut [::rfutil::List_matMul2x2 [::rfutil::List_matMul2x2 $tFixtL $tMeas] $tFixtR]
-    set sDut [::rfutil::List_t2s $tDut]
-    return $sDut
-}
-
-
-
-proc ::rfutil::List_mag {data db} {
-    # Calculates magnitude of complex number.
-    # data - List of complex values represented as {real imag} pairs.
-    # db - Boolean selecting 20*log10(magnitude) instead of linear magnitude.
-    #
-    # Computes the complex modulus, optionally converting it to decibels. Logarithm errors propagate in dB mode.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # sample alignment is supplied by the caller.
-    #
-    # Returns: List of real values in input sample order; empty for empty input.
-    set result {}
-    set len [llength $data]
-    if {$db} {
-        for {set i 0} {$i<$len} {incr i} {
-            lappend result [expr {20*log10([mod [lindex $data $i]])}]
-        }
-    } else {
-        for {set i 0} {$i<$len} {incr i} {
-            lappend result [mod [lindex $data $i]]
-        }
-    }
-    return $result
-}
-
-
-
-proc ::rfutil::List_angle {data deg} {
-    # Calculates angle (phase) of complex number.
-    # data - List of complex values represented as {real imag} pairs.
-    # deg - Boolean selecting degrees instead of radians.
-    #
-    # Computes the principal complex argument, optionally scaling radians to degrees. No phase unwrapping is performed.
-    #
-    # This internal scalar backend does not parse options or create RBC vectors. Inputs are not modified;
-    # sample alignment is supplied by the caller.
-    #
-    # Returns: List of real values in input sample order; empty for empty input.
     variable radtodeg
+    if {$op eq {deemb}} {
+        foreach {field label} {sMeas m sFixtL l sFixtR r} {
+            set t [ListCalculate s2t [dict create sxx [dict get $options $field]]]
+            if {$label ne {m}} {
+                set t [ListCalculate inv2x2 [dict create mat $t]]
+            }
+            set $label $t
+        }
+        set lm [ListCalculate matMul2x2 [dict create mat1 $l mat2 $m]]
+        set lmr [ListCalculate matMul2x2 [dict create mat1 $lm mat2 $r]]
+        return [ListCalculate t2s [dict create txx $lmr]]
+    }
+    set samples {}
+    set number 0
+    foreach input [Signature $op] {
+        set value [dict get $options $input]
+        if {$input eq {z0}} {
+            set z0 $value
+        } elseif {$input in {freq data}} {
+            dict set samples $input $value
+        } else {
+            set letters [expr {$number == 0 ? {a c b d} : {e g f h}}]
+            foreach key {11 21 12 22} letter $letters {
+                dict set samples $letter [dict get $value $key]
+            }
+            incr number
+        }
+    }
+    set 1c [complex 1 0]
+    set 2c [complex 2 0]
+    set m1c [complex -1 0]
+    set m2c [complex -2 0]
+    if {$op in {s2y y2s}} {
+        set y0 [pow $z0 $m1c]
+    }
+    set fields [Fields $op]
     set result {}
-    set len [llength $data]
-    if {$deg} {
-        for {set i 0} {$i<$len} {incr i} {
-            lappend result [expr {$radtodeg*[arg [lindex $data $i]]}]
+    foreach key $fields {
+        dict set result $key {}
+    }
+    set count [llength [lindex [dict values $samples] 0]]
+    for {set i 0} {$i < $count} {incr i} {
+        dict for {name values} $samples {
+            set $name [lindex $values $i]
         }
-    } else {
-        for {set i 0} {$i<$len} {incr i} {
-            lappend result [arg [lindex $data $i]]
+        switch -- $op {
+            s2z {
+                dict set point 11 [* $z0 [/ [+ [* [+ $1c $a] [- $1c $d]] [* $b $c]]\
+                                                  [- [* [- $1c $a] [- $1c $d]] [* $b $c]]]]
+                dict set point 12 [* $z0 [/ [* $2c $b] [- [* [- $1c $a] [- $1c $d]] [* $b $c] ]]]
+                dict set point 21 [* $z0 [/ [* $2c $c] [- [* [- $1c $a] [- $1c $d]] [* $b $c] ]]]
+                dict set point 22 [* $z0 [/ [+ [* [- $1c $a] [+ $1c $d]] [* $b $c]]\
+                                                  [- [* [- $1c $a] [- $1c $d]] [* $b $c]]]]
+            }
+            s2t {
+                dict set point 11 [- $b [/ [* $a $d] $c]]
+                dict set point 12 [/ $a $c]
+                dict set point 21 [* $m1c [/ $d $c]]
+                dict set point 22 [/ $1c $c]
+            }
+            t2s {
+                dict set point 11 [/ $b $d]
+                dict set point 12 [- $a [/ [* $b $c] $d]]
+                dict set point 21 [/ $1c $d]
+                dict set point 22 [* $m1c [/ $c $d]]
+            }
+            s2y {
+                dict set point 11 [* $y0 [/ [+ [* [- $1c $a] [+ $1c $d]] [* $b $c]] [- [* [+ $1c $a] [+ $1c $d]]\
+                                                                                             [* $b $c]]]]
+                dict set point 12 [* $y0 [/ [* $m2c $b] [- [* [+ $1c $a] [+ $1c $d]] [* $b $c] ]]]
+                dict set point 21 [* $y0 [/ [* $m2c $c] [- [* [+ $1c $a] [+ $1c $d]] [* $b $c] ]]]
+                dict set point 22 [* $y0 [/ [+ [* [+ $1c $a] [- $1c $d]] [* $b $c]] [- [* [+ $1c $a] [+ $1c $d]]\
+                                                                                             [* $b $c]]]]
+            }
+            z2s {
+                dict set point 11 [/ [- [* [- $a $z0] [+ $d $z0]] [* $b $c]] [- [* [+ $a $z0] [+ $d $z0]] [* $b $c]]]
+                dict set point 12 [/ [* [* $2c $b] $z0] [- [* [+ $a $z0] [+ $d $z0]] [* $b $c]]]
+                dict set point 21 [/ [* [* $2c $c] $z0] [- [* [+ $a $z0] [+ $d $z0]] [* $b $c]]]
+                dict set point 22 [/ [- [* [+ $a $z0] [- $d $z0]] [* $b $c]] [- [* [+ $a $z0] [+ $d $z0]] [* $b $c]]]
+            }
+            y2s {
+                dict set point 11 [/ [+ [* [- $y0 $a ] [+ $y0 $d]] [* $b $c]] [- [* [+ $y0 $a] [+ $y0 $d]] [* $b $c]]]
+                dict set point 12 [/ [* [* $m2c $b] $y0] [- [* [+ $y0 $a] [+ $y0 $d]] [* $b $c]]]
+                dict set point 21 [/ [* [* $m2c $c] $y0] [- [* [+ $y0 $a] [+ $y0 $d]] [* $b $c]]]
+                dict set point 22 [/ [+ [* [+ $y0 $a ] [- $y0 $d]] [* $b $c]] [- [* [+ $y0 $a] [+ $y0 $d]] [* $b $c]]]
+            }
+            z2y - y2z {
+                dict set point 11 [/ $d [- [* $a $d] [* $b $c]]]
+                dict set point 12 [/ [* $b $m1c] [- [* $a $d] [* $b $c]]]
+                dict set point 21 [/ [* $c $m1c] [- [* $a $d] [* $b $c]]]
+                dict set point 22 [/ $a [- [* $a $d] [* $b $c]]]
+            }
+            inv2x2 {
+                set det [- [* $a $d] [* $b $c]]
+                if {([real $det]==0.0) && ([imag $det]==0.0)} {
+                    return -code error {Matrix can't be inverted}
+                }
+                set rec [/ $1c $det]
+                dict set point 11 [* $rec $d]
+                dict set point 12 [* $rec [* $m1c $b]]
+                dict set point 21 [* $rec [* $m1c $c]]
+                dict set point 22 [* $rec $a]
+            }
+            matMul2x2 {
+                dict set point 11 [+ [* $a $e] [* $b $g]]
+                dict set point 12 [+ [* $a $f] [* $b $h]]
+                dict set point 21 [+ [* $c $e] [* $d $g]]
+                dict set point 22 [+ [* $c $f] [* $d $h]]
+            }
+            zTEq -
+            yPEq -
+            cxxTEq -
+            lxxTEq -
+            cxxPEq -
+            lxxPEq {
+                if {[string match *TEq $op]} {
+                    set eq [list [- $a $c] [- $d $c] $c]
+                } else {
+                    set eq [list [+ $a $c] [+ $d $c] [* $m1c $c]]
+                }
+                foreach value $eq key $fields {
+                    if {$op in {cxxTEq lxxPEq}} {
+                        set value [expr {-1/(2*$pi*$freq*[imag $value])}]
+                    } elseif {$op in {lxxTEq cxxPEq}} {
+                        set value [expr {[imag $value]/(2*$pi*$freq)}]
+                    }
+                    dict set point $key $value
+                }
+            }
+            mag {
+                set value [mod $data]
+                if {[dict get $options db]} {
+                    set value [expr {20*log10($value)}]
+                }
+                dict set point result $value
+            }
+            angle {
+                set value [arg $data]
+                if {[dict get $options deg]} {
+                    set value [expr {$radtodeg*$value}]
+                }
+                dict set point result $value
+            }
         }
+        foreach key $fields {dict lappend result $key [dict get $point $key]}
     }
     return $result
 }
 
 ### Vector calculations
-
 # Whole-sweep complex arithmetic. Inputs are copied to private, expression-safe
 # names once, so literal public names never become expression syntax.
 proc ::rfutil::Eval {work expression} {
