@@ -12,8 +12,8 @@ set recovered [rfutil::z2s $zv -input vector]
 rbc::vector destroy {*}[dict values $zv]
 ```
 
-All runtime implementation is in `rfutil.tcl`.`-input list|vector`, `-output list|vector`, `-namespace`, `-names`, and
-`-ifexists error|replace` follow the tclinterp conventions.  `mag` and `angle` additionally accept `-name`. Package-wide
+All runtime implementation is in `rfutil.tcl`. `-input list|vector`, `-output list|vector`, `-namespace`, `-names`, and
+`-ifexists error|replace` follow the tclinterp conventions. `mag` and `angle` additionally accept `-name`. Package-wide
 defaults are controlled by `rfutil::configure`; defaults remain list/list/error. The Tcl-only RBC package is loaded only
 when needed.
 

@@ -70,7 +70,6 @@ Frequency vectors must be real\&. Equivalent capacitance/inductance, magnitude a
 .PP
 Every numeric input of a call follows -input, including its frequency argument\&. The optional z0 remains
 a single {real imag} scalar in both modes\&. Mixed list/vector components within one call are not supported\&.
-This explicit convention matches tclinterp and avoids guessing whether a one-element list is a vector name\&.
 .PP
 .RS 4n
 .nf
@@ -148,8 +147,6 @@ grid\&. Empty sweeps return empty components\&. The vector backend rejects exact
 determinants and required frequency/reactance divisors before publishing results\&. Nearly singular data can
 still amplify numerical errors; no automatic regularisation is performed\&.
 .PP
-The conversion formulas and transfer-matrix convention are retained from the original package\&. In particular,
-S-to-T divides by S21 and T-to-S divides by T22\&. This is a scattering-transfer matrix, not an ABCD matrix\&.
 The scalar reference impedance is common to both ports\&. The default reference impedance is {50\&.0 0\&.0}\&.
 .SH "BUILD, TEST AND DOCUMENTATION"
 .PP
@@ -220,11 +217,6 @@ data
 List with complex data in form {real imag}
 .RE
 .PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 list of angles\&. With vector output, returns a real RBC vector name\&.
@@ -290,7 +282,7 @@ freq
 Frequency values list\&.
 .TP
 yxx
-Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&. The form of dictionary is: {11 list 12 list 21 list 22 list}
+Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&.  The form of dictionary is: {11 list 12 list 21 list 22 list}
 .RE
 .PP
 \fBDescription\fR
@@ -309,9 +301,6 @@ Dictionary that contains 2-port matrix of y-parameters, each matrix element is t
      o-----o-------------o-----o
 .fi
 .RE
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
 .PP
 \fBReturn value\fR
 .PP
@@ -370,9 +359,6 @@ Dictionary that contains 2-port matrix of z-parameters, each matrix element is t
 .fi
 .RE
 .PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the form {c1 list c2 list c3 list} with capacitive part of equivalent elements impedance\&.
@@ -426,9 +412,6 @@ Measured s-parameters matrix in dictionary form {11 list 12 list 21 list 22 list
 .fi
 .RE
 .PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the same form as input dictionaries with deembedded DUT s-matrix\&. With vector output,
@@ -465,11 +448,6 @@ Output format; defaults to ::rfutil::configure -output\&.
 mat
 Dictionary that contains 2-port matrix, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&. The form of dictionary is: {11 list 12 list 21 list 22 list}
 .RE
-.PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
 .PP
 \fBReturn value\fR
 .PP
@@ -528,9 +506,6 @@ Dictionary that contains 2-port matrix of y-parameters, each matrix element is t
 .fi
 .RE
 .PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the form {l1 list l2 list l3 list} with inductive part of equivalent elements impedance\&.
@@ -588,9 +563,6 @@ Dictionary that contains 2-port matrix of z-parameters, each matrix element is t
 .fi
 .RE
 .PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the form {l1 list l2 list l3 list} with inductive part of equivalent elements impedance\&.
@@ -636,11 +608,6 @@ data
 List with complex data in form {real imag}
 .RE
 .PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 list of magnitudes\&. With vector output, returns a real RBC vector name\&.
@@ -680,11 +647,6 @@ mat2
 Second matrix in dictionary form {11 list 12 list 21 list 22 list}
 .RE
 .PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the same form as input dictionaries with resulted matrix\&. With vector output, dictionary
@@ -721,11 +683,6 @@ Output format; defaults to ::rfutil::configure -output\&.
 sxx
 Dictionary that contains 2-port matrix of s-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&. The form of dictionary is: {11 list 12 list 21 list 22 list}
 .RE
-.PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
 .PP
 \fBReturn value\fR
 .PP
@@ -767,11 +724,6 @@ z0
 Reference impedance in form of {real imag}, default is {50 0}, optional\&.
 .RE
 .PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the same form as input dictionary with y-parameters\&. With vector output, dictionary values
@@ -812,11 +764,6 @@ z0
 Reference impedance in form of {real imag}, default is {50 0}, optional\&.
 .RE
 .PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the same form as input dictionary with z-parameters\&. With vector output, dictionary values
@@ -853,11 +800,6 @@ Output format; defaults to ::rfutil::configure -output\&.
 txx
 Dictionary that contains 2-port matrix of transfer parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&. The form of dictionary is: {11 list 12 list 21 list 22 list}
 .RE
-.PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
 .PP
 \fBReturn value\fR
 .PP
@@ -899,11 +841,6 @@ z0
 Reference impedance in form of {real imag}, default is {50 0}, optional\&.
 .RE
 .PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the same form as input dictionary with s-parameters\&. With vector output, dictionary values
@@ -940,11 +877,6 @@ Output format; defaults to ::rfutil::configure -output\&.
 yxx
 Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&. The form of dictionary is: {11 list 12 list 21 list 22 list}
 .RE
-.PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
 .PP
 \fBReturn value\fR
 .PP
@@ -1000,9 +932,6 @@ Dictionary that contains 2-port matrix of y-parameters, each matrix element is t
 .fi
 .RE
 .PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the form {y1 list y2 list y3 list} with impedances of equivalent elements\&. With vector
@@ -1043,11 +972,6 @@ zxx
 Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&. The form of dictionary is: {11 list 12 list 21 list 22 list}
 .RE
 .PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
-.PP
 \fBReturn value\fR
 .PP
 dictionary of the same form as input dictionary with s-parameters\&. With vector output, dictionary values
@@ -1084,11 +1008,6 @@ Output format; defaults to ::rfutil::configure -output\&.
 zxx
 Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of {real imag}\&. The form of dictionary is: {11 list 12 list 21 list 22 list}
 .RE
-.PP
-\fBDescription\fR
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
 .PP
 \fBReturn value\fR
 .PP
@@ -1143,9 +1062,6 @@ Dictionary that contains 2-port matrix of z-parameters, each matrix element is t
     o----------- o -----------o
 .fi
 .RE
-.PP
-Vector names resolve in the caller's namespace\&. Vector options require Tcl 9 and rbc::vector\&.
-Inputs are borrowed; output vectors are owned by the caller\&. See the package guide for naming and ownership\&.
 .PP
 \fBReturn value\fR
 .PP

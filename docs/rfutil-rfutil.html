@@ -127,8 +127,7 @@ single matrix element. In list mode, each value is a list of complex <code class
 value is an RBC vector name. Complex and real parameter vectors are accepted; matrix outputs are complex.
 Frequency vectors must be real. Equivalent capacitance/inductance, magnitude and phase outputs are real.</p>
 <p>Every numeric input of a call follows <code class="docutils literal notranslate"><span class="pre">-input</span></code>, including its frequency argument. The optional <code class="docutils literal notranslate"><span class="pre">z0</span></code> remains
-a single <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code> scalar in both modes. Mixed list/vector components within one call are not supported.
-This explicit convention matches <code class="docutils literal notranslate"><span class="pre">tclinterp</span></code> and avoids guessing whether a one-element list is a vector name.</p>
+a single <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code> scalar in both modes. Mixed list/vector components within one call are not supported.</p>
 <div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="nb">package</span><span class="w"> </span>require<span class="w"> </span>rfutil<span class="w"> </span><span class="mf">0.2</span>
 <span class="k">set</span><span class="w"> </span>s<span class="w"> </span><span class="k">[</span><span class="nb">dict</span><span class="w"> </span>create<span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.1</span><span class="w"> </span><span class="mf">0.2</span><span class="k">}}</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.02</span><span class="w"> </span><span class="mf">0.01</span><span class="k">}}</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.8</span><span class="w"> </span><span class="o">-</span><span class="mf">0.1</span><span class="k">}}</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="k">{{</span><span class="nv">0.2</span><span class="w"> </span><span class="mf">0.1</span><span class="k">}}]</span>
 <span class="k">set</span><span class="w"> </span>z<span class="w"> </span><span class="k">[</span><span class="nv">rfutil</span><span class="o">::</span>s2z<span class="w"> </span><span class="nv">$s</span><span class="k">]</span>
@@ -183,9 +182,7 @@ caller must ensure that sample frequencies correspond; the package does not inte
 grid. Empty sweeps return empty components. The vector backend rejects exactly zero conversion denominators,
 determinants and required frequency/reactance divisors before publishing results. Nearly singular data can
 still amplify numerical errors; no automatic regularisation is performed.</p>
-<p>The conversion formulas and transfer-matrix convention are retained from the original package. In particular,
-S-to-T divides by S21 and T-to-S divides by T22. This is a scattering-transfer matrix, not an ABCD matrix.
-The scalar reference impedance is common to both ports. The default reference impedance is <code class="docutils literal notranslate"><span class="pre">{50.0</span> <span class="pre">0.0}</span></code>.</p>
+<p>The scalar reference impedance is common to both ports. The default reference impedance is <code class="docutils literal notranslate"><span class="pre">{50.0</span> <span class="pre">0.0}</span></code>.</p>
 </section>
 <section id="build-test-and-documentation">
 <span id="r-rfutil-build-test-and-documentation"></span><span id="r-3a3arfutilqzbuild2c20test20and20documentation"></span><h2>Build, test and documentation<a class="headerlink" href="#build-test-and-documentation" title="Link to this heading"></a></h2>
@@ -244,9 +241,6 @@ pre-generated configure script, tests and documentation sources. Neither archive
 <dd class="field-even"><p>List with complex data in form <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>list of angles. With vector output, returns a real RBC vector name.</p>
 </section>
@@ -295,7 +289,7 @@ Inputs are borrowed; output vectors are owned by the caller. See the package gui
 <dd class="field-even"><p>Frequency values list.</p>
 </dd>
 <dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">yxx</span></code><span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>. The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
+<dd class="field-odd"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>.  The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
 <p class="rubric">Description</p>
@@ -311,8 +305,6 @@ P1 .  C1---         C2---    . P2
    o-----o-------------o-----o
 </pre></div>
 </div>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the form <code class="docutils literal notranslate"><span class="pre">{c1</span> <span class="pre">list</span> <span class="pre">c2</span> <span class="pre">list</span> <span class="pre">c3</span> <span class="pre">list}</span></code> with capacitive part of equivalent elements
 admittance. With vector output, dictionary values are RBC vector names instead of lists.</p>
@@ -358,8 +350,6 @@ P1 .         C3---           . P2
    o----------- o -----------o
 </pre></div>
 </div>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the form <code class="docutils literal notranslate"><span class="pre">{c1</span> <span class="pre">list</span> <span class="pre">c2</span> <span class="pre">list</span> <span class="pre">c3</span> <span class="pre">list}</span></code> with capacitive part of equivalent elements impedance.
 With vector output, dictionary values are RBC vector names instead of lists.</p>
@@ -401,8 +391,6 @@ With vector output, dictionary values are RBC vector names instead of lists.</p>
 └      ┘   └        ┘     └       ┘     └        ┘
 </pre></div>
 </div>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionaries with deembedded DUT s-matrix. With vector output,
 dictionary values are RBC vector names instead of lists.</p>
@@ -432,9 +420,6 @@ dictionary values are RBC vector names instead of lists.</p>
 <dd class="field-even"><p>Dictionary that contains 2-port matrix, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>. The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with resulted matrix. With vector output, dictionary
 values are RBC vector names instead of lists.</p>
@@ -480,8 +465,6 @@ P1 .     C|            C|    . P2
    o-----o-------------o-----o
 </pre></div>
 </div>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the form <code class="docutils literal notranslate"><span class="pre">{l1</span> <span class="pre">list</span> <span class="pre">l2</span> <span class="pre">list</span> <span class="pre">l3</span> <span class="pre">list}</span></code> with inductive part of equivalent elements impedance.
 With vector output, dictionary values are RBC vector names instead of lists.</p>
@@ -527,8 +510,6 @@ P1 .            C|           . P2
    o----------- o -----------o
 </pre></div>
 </div>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the form <code class="docutils literal notranslate"><span class="pre">{l1</span> <span class="pre">list</span> <span class="pre">l2</span> <span class="pre">list</span> <span class="pre">l3</span> <span class="pre">list}</span></code> with inductive part of equivalent elements impedance.
 With vector output, dictionary values are RBC vector names instead of lists.</p>
@@ -565,9 +546,6 @@ With vector output, dictionary values are RBC vector names instead of lists.</p>
 <dd class="field-even"><p>List with complex data in form <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>list of magnitudes. With vector output, returns a real RBC vector name.</p>
 </section>
@@ -593,15 +571,12 @@ Inputs are borrowed; output vectors are owned by the caller. See the package gui
 <dd class="field-odd"><p>Output format; defaults to <code class="docutils literal notranslate"><span class="pre">::rfutil::configure</span> <span class="pre">-output</span></code>.</p>
 </dd>
 <dt class="field-even"><code class="docutils literal notranslate"><span class="pre">mat1</span></code><span class="colon">:</span></dt>
-<dd class="field-even"><p>First matrix in dictionary form {11 list 12 list 21 list 22 list}</p>
+<dd class="field-even"><p>First matrix in dictionary form <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 <dt class="field-odd"><code class="docutils literal notranslate"><span class="pre">mat2</span></code><span class="colon">:</span></dt>
-<dd class="field-odd"><p>Second matrix in dictionary form {11 list 12 list 21 list 22 list}</p>
+<dd class="field-odd"><p>Second matrix in dictionary form <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionaries with resulted matrix. With vector output, dictionary
 values are RBC vector names instead of lists.</p>
@@ -631,9 +606,6 @@ values are RBC vector names instead of lists.</p>
 <dd class="field-even"><p>Dictionary that contains 2-port matrix of s-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>. The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with transfer parameters. With vector output, dictionary
 values are RBC vector names instead of lists.</p>
@@ -666,9 +638,6 @@ values are RBC vector names instead of lists.</p>
 <dd class="field-odd"><p>Reference impedance in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>, default is <code class="docutils literal notranslate"><span class="pre">{50</span> <span class="pre">0}</span></code>, optional.</p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with y-parameters. With vector output, dictionary values
 are RBC vector names instead of lists.</p>
@@ -701,9 +670,6 @@ are RBC vector names instead of lists.</p>
 <dd class="field-odd"><p>Reference impedance in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>, default is <code class="docutils literal notranslate"><span class="pre">{50</span> <span class="pre">0}</span></code>, optional.</p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with z-parameters. With vector output, dictionary values
 are RBC vector names instead of lists.</p>
@@ -733,9 +699,6 @@ are RBC vector names instead of lists.</p>
 <dd class="field-even"><p>Dictionary that contains 2-port matrix of transfer parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>. The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with s-parameters. With vector output, dictionary values
 are RBC vector names instead of lists.</p>
@@ -768,9 +731,6 @@ are RBC vector names instead of lists.</p>
 <dd class="field-odd"><p>Reference impedance in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>, default is <code class="docutils literal notranslate"><span class="pre">{50</span> <span class="pre">0}</span></code>, optional.</p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with s-parameters. With vector output, dictionary values
 are RBC vector names instead of lists.</p>
@@ -800,9 +760,6 @@ are RBC vector names instead of lists.</p>
 <dd class="field-even"><p>Dictionary that contains 2-port matrix of y-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>. The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with z-parameters. With vector output, dictionary values
 are RBC vector names instead of lists.</p>
@@ -845,8 +802,6 @@ P1 .    | |           | |    . P2
    o-----o-------------o-----o
 </pre></div>
 </div>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the form <code class="docutils literal notranslate"><span class="pre">{y1</span> <span class="pre">list</span> <span class="pre">y2</span> <span class="pre">list</span> <span class="pre">y3</span> <span class="pre">list}</span></code> with impedances of equivalent elements. With vector
 output, dictionary values are RBC vector names instead of lists.</p>
@@ -879,9 +834,6 @@ output, dictionary values are RBC vector names instead of lists.</p>
 <dd class="field-odd"><p>Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>. The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with s-parameters. With vector output, dictionary values
 are RBC vector names instead of lists.</p>
@@ -911,9 +863,6 @@ are RBC vector names instead of lists.</p>
 <dd class="field-even"><p>Dictionary that contains 2-port matrix of z-parameters, each matrix element is the list of values at different frequencies (or other parameter) in form of <code class="docutils literal notranslate"><span class="pre">{real</span> <span class="pre">imag}</span></code>. The form of dictionary is: <code class="docutils literal notranslate"><span class="pre">{11</span> <span class="pre">list</span> <span class="pre">12</span> <span class="pre">list</span> <span class="pre">21</span> <span class="pre">list</span> <span class="pre">22</span> <span class="pre">list}</span></code></p>
 </dd>
 </dl>
-<p class="rubric">Description</p>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the same form as input dictionary with y-parameters. With vector output, dictionary values
 are RBC vector names instead of lists.</p>
@@ -956,8 +905,6 @@ P1 .           | |           . P2
    o----------- o -----------o
 </pre></div>
 </div>
-<p>Vector names resolve in the caller’s namespace. Vector options require Tcl 9 and rbc::vector.
-Inputs are borrowed; output vectors are owned by the caller. See the package guide for naming and ownership.</p>
 <p class="rubric">Return value</p>
 <p>dictionary of the form <code class="docutils literal notranslate"><span class="pre">{z1</span> <span class="pre">list</span> <span class="pre">z2</span> <span class="pre">list</span> <span class="pre">z3</span> <span class="pre">list}</span></code> with impedances of equivalent elements. With vector
 output, dictionary values are RBC vector names instead of lists.</p>
