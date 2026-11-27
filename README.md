@@ -20,7 +20,7 @@ when needed.
 ## Requirements and installation
 
 - Tcl 8.6 or 9 for lists; Tcl 9 for vectors.
-- Tcllib and argparse 0.58 or later.
+- Tcllib and argparse 0.70 or later.
 - Optional: current RBC 0.8.5 or later with complex vectors and `vector expr -name`.
 - Documentation: Ruff, Sphinx and sphinx_rtd_theme.
 

@@ -4,7 +4,7 @@
 
 package require math::complexnumbers
 package require math::constants
-package require argparse 0.65
+package require argparse 0.70
 
 package provide rfutil 0.2
 
@@ -15,7 +15,7 @@ namespace eval ::rfutil {
         matrix products and inverses, and fixture de-embedding. It also calculates complex magnitude and phase.
 
         ## Requirements
-        List operation requires Tcl 8.6 or Tcl 9, Tcllib (`math::complexnumbers`, `math::constants`), and argparse 0.58
+        List operation requires Tcl 8.6 or Tcl 9, Tcllib (`math::complexnumbers`, `math::constants`), and argparse 0.70
         or later. Vector operation additionally requires Tcl 9 and `rbc::vector` 0.8.5 or later. Use a current RBC build
         including complex vectors and `vector expr -name`. No Tk initialization, display or Cairo is required.
 
@@ -236,7 +236,9 @@ proc ::rfutil::configure {args} {
     # Synopsis: ?option?
     # Synopsis: ?-input list|vector? ?-output list|vector? ?-ifexists error|replace?
     variable defaults
-    set arguments [argparse -inline -help {Query or change interpreter-local defaults atomically. With no arguments,\
+    set arguments [argparse -inline -synopsiscmd ::rfutil::configure\
+        -synopsis {?option? | ?-input list|vector? ?-output list|vector? ?-ifexists error|replace?}\
+            -help {Query or change interpreter-local defaults atomically. With no arguments,\
                                                    returns all settings. With one bare option, returns its value.} {
         {-input? -enum {list vector} -help {Default input representation: list or vector}}
         {-output? -enum {list vector} -help {Default output representation: list or vector}}
@@ -713,7 +715,8 @@ proc ::rfutil::Parse {op arguments} {
             {-name= -help {Destination for mag or angle; omit or use #auto for automatic naming}}\
             {-names= -type dict -help {Dictionary of result fields and destination vector names}}\
             {-ifexists= -enum {error replace} -help {Existing destination policy; uses the package default}}
-    return [argparse -inline -mixed -helplevel 3 -help [dict get $operations $op description] $spec]
+    return [argparse -inline -mixed -helplevel 3 -synopsiscmd ::rfutil::$op\
+                    -help [dict get $operations $op description] $spec]
 }
 
 proc ::rfutil::RequireRbc {} {

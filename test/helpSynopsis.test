@@ -1,0 +1,13 @@
+package require tcltest 2
+namespace import ::tcltest::*
+package require rfutil
+
+foreach operation [dict keys $::rfutil::operations] {
+    test help-synopsis-$operation {shared parser names the public calculation and returns without calculating} -body {
+        ::rfutil::$operation -help
+    } -match glob -output "::rfutil::$operation *" -result {}
+}
+test help-synopsis-configure {configure documents queries as well as updates} -body {
+    ::rfutil::configure -help
+} -match glob -output {::rfutil::configure *option*} -result {}
+cleanupTests
