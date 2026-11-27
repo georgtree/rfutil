@@ -1,0 +1,74 @@
+# Pure Tcl package: Nmake drives the same operations without a C compilation step.
+# Run from win/ in an x64 Visual Studio developer command prompt.
+!ifndef INSTALLDIR
+INSTALLDIR = C:\Tcl91
+!endif
+!ifndef TCLDIR
+TCLDIR = $(INSTALLDIR)
+!endif
+!ifndef TCLSH
+TCLSH = $(TCLDIR)\bin\tclsh91.exe
+!endif
+!ifndef OUT_DIR
+OUT_DIR = $(MAKEDIR)\build
+!endif
+!ifndef DOC_DIR
+DOC_DIR = $(MAKEDIR)\..\docs
+!endif
+!ifndef DOC_PYTHON
+DOC_PYTHON = python
+!endif
+!ifndef DIST_ROOT
+DIST_ROOT = $(OUT_DIR)\dist
+!endif
+!ifndef DIST_NAME
+DIST_NAME = rfutil-0.2
+!endif
+!ifndef LIBDIR
+LIBDIR = $(INSTALLDIR)\lib
+!endif
+!ifndef DOCDIR
+DOCDIR = $(INSTALLDIR)\share\rfutil0.2\doc
+!endif
+!ifndef MANDIR
+MANDIR = $(INSTALLDIR)\share\man
+!endif
+!ifndef DESTDIR
+DESTDIR =
+!endif
+BUILD = "$(TCLSH)" "$(MAKEDIR)\build.tcl"
+OPTIONS = -out "$(OUT_DIR)" -docs "$(DOC_DIR)" -python "$(DOC_PYTHON)" -dist "$(DIST_ROOT)" -name "$(DIST_NAME)" -lib "$(LIBDIR)" -docinstall "$(DOCDIR)" -man "$(MANDIR)" -stage "$(DESTDIR)"
+
+all:
+	@$(BUILD) all $(OPTIONS)
+
+test: all
+	@$(BUILD) test $(OPTIONS) -- $(TESTFLAGS)
+
+test-vector: all
+	@$(BUILD) test-vector $(OPTIONS) -- $(TESTFLAGS)
+
+doc:
+	@$(BUILD) doc $(OPTIONS) -- $(DOCFLAGS)
+
+install: install-libraries install-doc
+install-libraries: all
+	@$(BUILD) install-libraries $(OPTIONS)
+install-doc:
+	@$(BUILD) install-doc $(OPTIONS)
+
+uninstall: uninstall-libraries uninstall-doc
+uninstall-libraries:
+	@$(BUILD) uninstall-libraries $(OPTIONS)
+uninstall-doc:
+	@$(BUILD) uninstall-doc $(OPTIONS)
+
+dist:
+	@$(BUILD) dist $(OPTIONS)
+dist-zip:
+	@$(BUILD) dist-zip $(OPTIONS)
+dist-clean:
+	@$(BUILD) dist-clean $(OPTIONS)
+clean:
+	@$(BUILD) clean $(OPTIONS)
+distclean: clean

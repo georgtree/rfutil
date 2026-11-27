@@ -47,6 +47,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">rfutil: RF parameter utilities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements-and-installation">Requirements and installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-integration-and-rolling-packages">Continuous integration and rolling packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#native-windows-msvc">Native Windows / MSVC</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rfutil-rfutil.html">::rfutil</a></li>
@@ -128,7 +130,7 @@ when needed.</p>
 <span id="r-requirements-and-installation"></span><span id="r-requirements20and20installation"></span><h2>Requirements and installation<a class="headerlink" href="#requirements-and-installation" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Tcl 8.6 or 9 for lists; Tcl 9 for vectors.</p></li>
-<li><p>Tcllib and argparse 0.58 or later.</p></li>
+<li><p>Tcllib and argparse 0.70 or later.</p></li>
 <li><p>Optional: current RBC 0.8.5 or later with complex vectors and <code class="docutils literal notranslate"><span class="pre">vector</span> <span class="pre">expr</span> <span class="pre">-name</span></code>.</p></li>
 <li><p>Documentation: Ruff, Sphinx and sphinx_rtd_theme.</p></li>
 </ul>
@@ -148,6 +150,57 @@ Installation honours <code class="docutils literal notranslate"><span class="pre
 Autoconf is only needed after editing configure.ac.</p>
 <p>The namespace preamble in <code class="docutils literal notranslate"><span class="pre">rfutil.tcl</span></code> documents representation, naming, ownership and numerical conventions.
 Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doc</span></code> to produce the RTD HTML manual and nroff man page from Ruff sources.</p>
+</section>
+<section id="continuous-integration-and-rolling-packages">
+<span id="r-continuous-integration-and-rolling-packages"></span><span id="r-continuous20integration20and20rolling20packages"></span><h2>Continuous integration and rolling packages<a class="headerlink" href="#continuous-integration-and-rolling-packages" title="Link to this heading"></a></h2>
+<p>Pushes run the complete list and RBC vector test suite on Linux GCC, Windows UCRT64 and Windows MSVC (x64),
+using Tcl 9.1.0 and Tcllib 2.0. Vector support is required: missing RBC or skipped tests fail the jobs.</p>
+<p>Each workflow resolves the <code class="docutils literal notranslate"><span class="pre">latest</span></code> releases of <a class="reference external" href="https://github.com/georgtree/rbc-tk9/releases/tag/latest">RBC</a>
+and <a class="reference external" href="https://github.com/georgtree/argparse/releases/tag/latest">argparse</a> once for all three jobs. Downloads are
+verified against their SHA-256 digests. Dependency caches include the release tag target, asset ID and digest;
+Tcl runtime caches include the Tcl commit, compiler/toolchain, runner image, installation path and build recipe.
+The test and release workflows share these caches. Only the separately selected argparse package is exposed to
+Tcl, rather than the argparse copy bundled with RBC.</p>
+<p>Run <strong>Actions → Build packages → Run workflow</strong> to test all three platforms and publish their archives and
+<code class="docutils literal notranslate"><span class="pre">SHA256SUMS.txt</span></code> to the <a class="reference external" href="https://github.com/georgtree/rfutil/releases/tag/latest">rolling release</a>. Publication
+starts only after all three jobs pass. Subsequent successful manual builds replace the <code class="docutils literal notranslate"><span class="pre">latest</span></code> tag and assets.</p>
+<p>rfutil itself is pure Tcl: the archive suffix records the toolchain used for testing, not a package binary ABI.
+Archives retain the existing source-distribution layout (<code class="docutils literal notranslate"><span class="pre">rfutil-0.2/</span></code>), including tests, GNU/Nmake build files
+and the checked-in manual. Tcl, Tcllib, argparse and RBC are installed separately. After extraction, install
+using the supplied build files or add the package directory to <code class="docutils literal notranslate"><span class="pre">auto_path</span></code>.</p>
+</section>
+<section id="native-windows-msvc">
+<span id="r-native-windows-msvc"></span><span id="r-native20windows202f20msvc"></span><h2>Native Windows / MSVC<a class="headerlink" href="#native-windows-msvc" title="Link to this heading"></a></h2>
+<p>No MSYS2 shell, Autoconf, C compiler invocation or Tcl source tree is needed to build rfutil itself. From an
+<strong>x64 Native Tools Command Prompt for Visual Studio 2022</strong>, use a matching MSVC Tcl installation and matching
+MSVC dependency archives:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">cd</span> win
+<span class="k">set</span> <span class="s2">"INSTALLDIR=C:\Tcl91"</span>
+<span class="k">set</span> <span class="s2">"PATH=</span><span class="nv">%INSTALLDIR%</span><span class="s2">\bin;</span><span class="nv">%PATH%</span><span class="s2">"</span>
+<span class="k">set</span> <span class="s2">"TCLLIBPATH={C:/deps/argparse/lib/argparse0.70} {C:/deps/rbc/lib/rbc0.8.5} {C:/deps/tcllib/modules}"</span>
+nmake /f makefile.vc
+nmake /f makefile.vc test
+nmake /f makefile.vc test-vector
+nmake /f makefile.vc install
+nmake /f makefile.vc dist-zip
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">all</span></code> copies the runtime files into <code class="docutils literal notranslate"><span class="pre">win/build</span></code>. <code class="docutils literal notranslate"><span class="pre">test</span></code> permits absent RBC; <code class="docutils literal notranslate"><span class="pre">test-vector</span></code> requires it. Both run
+the actual Tcltest runner and propagate failures. Use <code class="docutils literal notranslate"><span class="pre">TESTFLAGS=&quot;-match</span> <span class="pre">pattern&quot;</span></code> to select tests locally.
+<code class="docutils literal notranslate"><span class="pre">dist</span></code> creates a source tar.gz; <code class="docutils literal notranslate"><span class="pre">dist-zip</span></code> creates a ZIP using Windows’ own <code class="docutils literal notranslate"><span class="pre">tar.exe</span></code>, regardless of MSYS2 on PATH.
+Both include native build support. <code class="docutils literal notranslate"><span class="pre">dist-clean</span></code> removes staging and archives.</p>
+<p>Override <code class="docutils literal notranslate"><span class="pre">TCLDIR</span></code> to use a different Tcl installation, or <code class="docutils literal notranslate"><span class="pre">TCLSH</span></code> to select its executable (default:
+<code class="docutils literal notranslate"><span class="pre">$(TCLDIR)\bin\tclsh91.exe</span></code>). <code class="docutils literal notranslate"><span class="pre">INSTALLDIR</span></code> controls the install prefix. <code class="docutils literal notranslate"><span class="pre">LIBDIR</span></code>, <code class="docutils literal notranslate"><span class="pre">DOCDIR</span></code> and <code class="docutils literal notranslate"><span class="pre">MANDIR</span></code> override
+library, HTML and manpage destinations; <code class="docutils literal notranslate"><span class="pre">OUT_DIR</span></code>, <code class="docutils literal notranslate"><span class="pre">DOC_DIR</span></code>, <code class="docutils literal notranslate"><span class="pre">DIST_ROOT</span></code> and <code class="docutils literal notranslate"><span class="pre">DIST_NAME</span></code> control build output,
+documentation and archives. <code class="docutils literal notranslate"><span class="pre">DESTDIR</span></code> stages installation beneath another directory; an absolute destination’s
+root/drive is removed before prefixing the staging path. Use the same overrides for installation and removal.</p>
+<p><code class="docutils literal notranslate"><span class="pre">nmake</span> <span class="pre">/f</span> <span class="pre">makefile.vc</span> <span class="pre">uninstall</span></code> removes package-owned files. <code class="docutils literal notranslate"><span class="pre">clean</span></code> (also <code class="docutils literal notranslate"><span class="pre">distclean</span></code>) removes generated runtime
+copies and documentation, preserving <code class="docutils literal notranslate"><span class="pre">manual.css</span></code>. To regenerate the manual, install Ruff on <code class="docutils literal notranslate"><span class="pre">TCLLIBPATH</span></code> and
+Sphinx plus sphinx_rtd_theme for the selected Python interpreter, then run:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>nmake /f makefile.vc doc DOC_PYTHON=python
+</pre></div>
+</div>
+<p>The native targets are implemented in <code class="docutils literal notranslate"><span class="pre">win/build.tcl</span></code>, so no external Nmake rules need to be copied from Tcl.</p>
 <hr class="docutils" />
 <p class="centered">
 <strong>Copyright (c) George Yashin</strong></p></section>

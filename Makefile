@@ -28,7 +28,7 @@ DIST_DIR = $(DIST_ROOT)/$(DIST_NAME)
 PKG_FILES = rfutil.tcl pkgIndex.tcl LICENSE
 DOC_FILES = index.html rfutil.html rfutil-rfutil.html genindex.html search.html \
     objects.inv searchindex.js .buildinfo .nojekyll rfutil.n rfutil-rfutil.n
-DIST_FILES = README.md CHANGELOG.md VALIDATION.md LICENSE configure configure.ac \
+DIST_FILES = README.md LICENSE configure configure.ac \
     aclocal.m4 Makefile.in pkgIndex.tcl rfutil.tcl test examples tclconfig
 
 all:
@@ -91,8 +91,9 @@ uninstall-doc:
 # One staging target is shared by tar and zip, including parallel invocations.
 dist-stage:
 	rm -rf "$(DIST_DIR)"
-	mkdir -p "$(DIST_DIR)/docs/_static"
+	mkdir -p "$(DIST_DIR)/docs/_static" "$(DIST_DIR)/win"
 	@set -e; for file in $(DIST_FILES); do cp -pR "$(srcdir)/$$file" "$(DIST_DIR)/"; done
+	cp -p "$(srcdir)/win/makefile.vc" "$(srcdir)/win/build.tcl" "$(DIST_DIR)/win/"
 	cp -p "$(srcdir)/docs/doc_gen.tcl" "$(srcdir)/docs/startPage.ruff" "$(DIST_DIR)/docs/"
 	cp -p "$(srcdir)/docs/_static/manual.css" "$(DIST_DIR)/docs/_static/"
 	@set -e; for file in $(DOC_FILES); do \

@@ -1,0 +1,67 @@
+package require tcltest 2
+namespace import ::tcltest::*
+source [file join [file dirname [info script]] .. win build.tcl]
+
+# Core Tcl implementation is shared by the local Nmake targets; no Visual Studio is needed here.
+test build-targets-install {repeated install and uninstall preserve unrelated files} -setup {
+    set temporary [makeDirectory rfutil-install]
+    set lib [file join $temporary lib]
+    set docs [file join $temporary doc]
+    set man [file join $temporary man]
+    set options [list -lib $lib -docinstall $docs -man $man]
+} -body {
+    foreach pass {1 2} {
+        ::rfutilBuild::Main install-libraries {*}$options
+        ::rfutilBuild::Main install-doc {*}$options
+    }
+    set installed [file isfile [file join $lib rfutil0.2 rfutil.tcl]]
+    set f [open [file join $lib rfutil0.2 keep.txt] w]; close $f
+    ::rfutilBuild::Main uninstall-libraries {*}$options
+    ::rfutilBuild::Main uninstall-doc {*}$options
+    list $installed [file exists [file join $lib rfutil0.2 rfutil.tcl]] \
+        [file exists [file join $lib rfutil0.2 keep.txt]] [file exists [file join $man mann rfutil.n]]
+} -cleanup {
+    removeDirectory $temporary
+} -result {1 0 1 0} -match glob -output {*}
+
+test build-targets-clean {clean preserves the stylesheet and unrelated output files} -setup {
+    set temporary [makeDirectory rfutil-clean]
+    set docs [file join $temporary docs]
+    file mkdir [file join $docs _static]
+    foreach path {docs/_static/manual.css docs/_static/generated.css docs/index.html out/keep.txt out/rfutil.tcl} {
+        set path [file join $temporary $path]
+        file mkdir [file dirname $path]
+        set f [open $path w]; close $f
+    }
+} -body {
+    ::rfutilBuild::Main clean -out [file join $temporary out] -docs $docs
+    list [file exists [file join $docs _static manual.css]] \
+        [file exists [file join $docs _static generated.css]] \
+        [file exists [file join $temporary out keep.txt]] [file exists [file join $docs index.html]]
+} -cleanup {
+    removeDirectory $temporary
+} -result {1 0 1 0}
+
+test build-targets-distname {invalid archive names fail before staging} -body {
+    catch {::rfutilBuild::Main dist -name ../other}
+} -result 1
+test build-targets-dist {source archives include native build support and clean removes both formats} -setup {
+    set temporary [makeDirectory rfutil-dist]
+    set dist [file join $temporary dist]
+} -body {
+    ::rfutilBuild::Main dist -dist $dist
+    set archive [file join $dist rfutil-0.2.tar.gz]
+    set tar tar
+    if {$::tcl_platform(platform) eq {windows}} {
+        set tar [file join $::env(SystemRoot) System32 tar.exe]
+    }
+    set members [split [exec $tar -tzf $archive] \n]
+    set valid [expr {{rfutil-0.2/rfutil.tcl} in $members &&
+                    {rfutil-0.2/win/makefile.vc} in $members &&
+                    {rfutil-0.2/win/build.tcl} in $members}]
+    ::rfutilBuild::Main dist-clean -dist $dist
+    list $valid [file exists $archive] [file exists [file join $dist rfutil-0.2]]
+} -cleanup {
+    removeDirectory $temporary
+} -result {1 0 0} -match glob -output {*}
+cleanupTests

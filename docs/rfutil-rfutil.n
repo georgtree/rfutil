@@ -58,7 +58,7 @@ rfutil calculates two-port S, Z, Y and scattering-transfer parameters, equivalen
 matrix products and inverses, and fixture de-embedding\&. It also calculates complex magnitude and phase\&.
 .SH REQUIREMENTS
 .PP
-List operation requires Tcl 8\&.6 or Tcl 9, Tcllib (math::complexnumbers, math::constants), and argparse 0\&.58
+List operation requires Tcl 8\&.6 or Tcl 9, Tcllib (math::complexnumbers, math::constants), and argparse 0\&.70
 or later\&. Vector operation additionally requires Tcl 9 and rbc::vector 0\&.8\&.5 or later\&. Use a current RBC build
 including complex vectors and vector expr -name\&. No Tk initialization, display or Cairo is required\&.
 .SH "REPRESENTATIONS AND DEFAULTS"
